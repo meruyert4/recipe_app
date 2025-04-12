@@ -50,7 +50,7 @@ class TabButtons extends StatelessWidget {
         onPressed: () {},
         child: Text(
           text,
-          style: Theme.of(context).textTheme.bodyText2!.copyWith(
+          style: Theme.of(context).textTheme.bodyMedium!.copyWith(
             color: Theme.of(context).primaryColor,
           ),
         ),

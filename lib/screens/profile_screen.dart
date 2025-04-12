@@ -20,7 +20,7 @@ class ProfileScreen extends StatelessWidget {
               ),
               Text(
                 'Profile',
-                style: Theme.of(context).textTheme.headline1,
+                style: Theme.of(context).textTheme.displayLarge,
               ),
               SizedBox(
                 height: 4.0.h,
@@ -92,7 +92,7 @@ class ProfileListTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListTile(
-      title: Text(text, style: Theme.of(context).textTheme.headline5),
+      title: Text(text, style: Theme.of(context).textTheme.headlineSmall),
       horizontalTitleGap: 5.0,
       leading: Padding(
         padding: const EdgeInsets.all(10.0),
@@ -127,12 +127,12 @@ class ProfileHeader extends StatelessWidget {
         ),
         Text(
           'Devina Hermawan',
-          style: Theme.of(context).textTheme.headline4,
+          style: Theme.of(context).textTheme.headlineMedium,
         ),
         const SizedBox(
           height: 5.0,
         ),
-        Text('Email Address', style: Theme.of(context).textTheme.headline5),
+        Text('Email Address', style: Theme.of(context).textTheme.headlineSmall),
       ],
     );
   }

@@ -47,7 +47,7 @@ class _SavedRecipesState extends State<SavedRecipes> {
         ),
         Text(
           'Saved',
-          style: Theme.of(context).textTheme.headline1,
+          style: Theme.of(context).textTheme.displayLarge,
         ),
         SizedBox(
           height: 4.0.h,
@@ -119,7 +119,7 @@ class _SavedRecipesState extends State<SavedRecipes> {
                               children: [
                                 Text(
                                   recipe.recipeName,
-                                  style: Theme.of(context).textTheme.headline4,
+                                  style: Theme.of(context).textTheme.headlineMedium,
                                 ),
                                 SizedBox(
                                   height: 1.5.h,
@@ -137,7 +137,7 @@ class _SavedRecipesState extends State<SavedRecipes> {
                                     Text(
                                       '${recipe.prepTime.toStringAsFixed(0)} M Prep',
                                       style:
-                                          Theme.of(context).textTheme.bodyText2,
+                                          Theme.of(context).textTheme.bodyMedium,
                                     ),
                                   ],
                                 ),
@@ -157,7 +157,7 @@ class _SavedRecipesState extends State<SavedRecipes> {
                                     Text(
                                       '${recipe.cookTime.toStringAsFixed(0)} M Cook',
                                       style:
-                                          Theme.of(context).textTheme.bodyText2,
+                                          Theme.of(context).textTheme.bodyMedium,
                                     ),
                                   ],
                                 ),
@@ -195,7 +195,7 @@ class EmptyRecipe extends StatelessWidget {
               'You haven\'t saved any recipes yet',
               style: Theme.of(context)
                   .textTheme
-                  .headline4!
+                  .headlineMedium!
                   .copyWith(fontSize: 14.sp),
             ),
             const SizedBox(
@@ -203,7 +203,7 @@ class EmptyRecipe extends StatelessWidget {
             ),
             Text(
               'Want to take a look?',
-              style: Theme.of(context).textTheme.headline5,
+              style: Theme.of(context).textTheme.headlineSmall,
             ),
             SizedBox(height: 2.5.h),
             InkWell(
@@ -227,7 +227,7 @@ class EmptyRecipe extends StatelessWidget {
                     'Explore',
                     style: Theme.of(context)
                         .textTheme
-                        .headline4!
+                        .headlineMedium!
                         .copyWith(color: Colors.white, fontSize: 14.sp),
                   ),
                 ),

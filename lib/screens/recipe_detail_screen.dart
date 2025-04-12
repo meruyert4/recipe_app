@@ -5,8 +5,8 @@ import 'package:recipe_app/models/models.dart';
 import 'package:recipe_app/provider/provider.dart';
 import 'package:unicons/unicons.dart';
 
-class RecipeScreen extends StatelessWidget {
-  const RecipeScreen({Key? key}) : super(key: key);
+class RecipeDetailScreen extends StatelessWidget {
+  const RecipeDetailScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -29,13 +29,9 @@ class RecipeScreen extends StatelessWidget {
               child: Column(
                 children: const [
                   RecipeAbout(),
-                  SizedBox(
-                    height: 20.0,
-                  ),
+                  SizedBox(height: 20.0),
                   RecipeIngredient(),
-                  SizedBox(
-                    height: 20.0,
-                  ),
+                  SizedBox(height: 20.0),
                   RecipeMethod(),
                 ],
               ),
@@ -48,9 +44,7 @@ class RecipeScreen extends StatelessWidget {
 }
 
 class RecipeMethod extends StatelessWidget {
-  const RecipeMethod({
-    Key? key,
-  }) : super(key: key);
+  const RecipeMethod({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -66,30 +60,24 @@ class RecipeMethod extends StatelessWidget {
           children: [
             Text(
               'Method',
-              style: Theme.of(context).textTheme.headline4,
+              style: Theme.of(context).textTheme.headlineMedium,
             ),
-            const SizedBox(
-              height: 10.0,
-            ),
+            const SizedBox(height: 10.0),
             Row(
               children: [
                 const Icon(UniconsLine.label),
-                const SizedBox(
-                  width: 5.0,
-                ),
+                const SizedBox(width: 5.0),
                 Expanded(
                   child: Text(
                     popularRecipes.recipeMethod,
-                    style: Theme.of(context).textTheme.bodyText2,
+                    style: Theme.of(context).textTheme.bodyMedium,
                     maxLines: 6,
                     overflow: TextOverflow.ellipsis,
                   ),
                 ),
               ],
             ),
-            const SizedBox(
-              height: 10.0,
-            ),
+            const SizedBox(height: 10.0),
           ],
         ),
       ),
@@ -98,9 +86,7 @@ class RecipeMethod extends StatelessWidget {
 }
 
 class RecipeAbout extends StatelessWidget {
-  const RecipeAbout({
-    Key? key,
-  }) : super(key: key);
+  const RecipeAbout({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -120,21 +106,13 @@ class RecipeAbout extends StatelessWidget {
               children: [
                 Text(
                   popularRecipes.recipeName,
-                  style: Theme.of(context).textTheme.headline4,
+                  style: Theme.of(context).textTheme.headlineMedium,
                 ),
                 Row(
                   children: const [
-                    Icon(
-                      UniconsLine.share,
-                      size: 26.0,
-                    ),
-                    SizedBox(
-                      width: 5.0,
-                    ),
-                    Icon(
-                      UniconsLine.bookmark,
-                      size: 26.0,
-                    )
+                    Icon(UniconsLine.share, size: 26.0),
+                    SizedBox(width: 5.0),
+                    Icon(UniconsLine.bookmark, size: 26.0)
                   ],
                 )
               ],
@@ -143,70 +121,56 @@ class RecipeAbout extends StatelessWidget {
               onPressed: () {},
               child: Text(
                 popularRecipes.recipeCategory,
-                style: Theme.of(context).textTheme.bodyText2!.copyWith(
+                style: Theme.of(context).textTheme.bodyMedium!.copyWith(
                       color: Theme.of(context).primaryColor,
                     ),
               ),
             ),
-            const SizedBox(
-              height: 10.0,
-            ),
+            const SizedBox(height: 10.0),
             Divider(
               thickness: 0.2,
               color: Theme.of(context).primaryColor,
               indent: 10.0,
               endIndent: 10.0,
             ),
-            const SizedBox(
-              height: 10.0,
-            ),
+            const SizedBox(height: 10.0),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Row(
                   children: [
                     const Icon(UniconsLine.clock),
-                    const SizedBox(
-                      width: 5.0,
-                    ),
+                    const SizedBox(width: 5.0),
                     Text(
                       '${popularRecipes.prepTime.toStringAsFixed(0)} M Prep Time',
-                      style: Theme.of(context).textTheme.bodyText2,
+                      style: Theme.of(context).textTheme.bodyMedium,
                     ),
                   ],
                 ),
                 Row(
                   children: [
                     const Icon(UniconsLine.clock),
-                    const SizedBox(
-                      width: 5.0,
-                    ),
+                    const SizedBox(width: 5.0),
                     Text(
                       '${popularRecipes.cookTime.toStringAsFixed(0)} M Cook Time',
-                      style: Theme.of(context).textTheme.bodyText2,
+                      style: Theme.of(context).textTheme.bodyMedium,
                     ),
                   ],
                 ),
               ],
             ),
-            const SizedBox(
-              height: 10.0,
-            ),
+            const SizedBox(height: 10.0),
             Row(
               children: [
                 const Icon(UniconsLine.users_alt),
-                const SizedBox(
-                  width: 5.0,
-                ),
+                const SizedBox(width: 5.0),
                 Text(
                   '${popularRecipes.recipeServing} People Serving',
-                  style: Theme.of(context).textTheme.bodyText2,
+                  style: Theme.of(context).textTheme.bodyMedium,
                 ),
               ],
             ),
-            const SizedBox(
-              height: 10.0,
-            ),
+            const SizedBox(height: 10.0),
           ],
         ),
       ),
@@ -215,9 +179,7 @@ class RecipeAbout extends StatelessWidget {
 }
 
 class RecipeIngredient extends StatelessWidget {
-  const RecipeIngredient({
-    Key? key,
-  }) : super(key: key);
+  const RecipeIngredient({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -235,47 +197,39 @@ class RecipeIngredient extends StatelessWidget {
             children: [
               Text(
                 'Ingredients',
-                style: Theme.of(context).textTheme.headline4,
+                style: Theme.of(context).textTheme.headlineMedium,
               ),
-              const SizedBox(
-                height: 10.0,
-              ),
+              const SizedBox(height: 10.0),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Row(
                     children: [
                       const Icon(UniconsLine.check),
-                      const SizedBox(
-                        width: 5.0,
-                      ),
+                      const SizedBox(width: 5.0),
                       Text(
                         popularRecipes.recipeIngredients[0],
-                        style: Theme.of(context).textTheme.bodyText2,
+                        style: Theme.of(context).textTheme.bodyMedium,
                       ),
                     ],
                   ),
                   Row(
                     children: [
                       const Icon(UniconsLine.check),
-                      const SizedBox(
-                        width: 5.0,
-                      ),
+                      const SizedBox(width: 5.0),
                       Text(
                         popularRecipes.recipeIngredients[1],
-                        style: Theme.of(context).textTheme.bodyText2,
+                        style: Theme.of(context).textTheme.bodyMedium,
                       ),
                     ],
                   ),
                   Row(
                     children: [
                       const Icon(UniconsLine.check),
-                      const SizedBox(
-                        width: 5.0,
-                      ),
+                      const SizedBox(width: 5.0),
                       Text(
                         popularRecipes.recipeIngredients[2],
-                        style: Theme.of(context).textTheme.bodyText2,
+                        style: Theme.of(context).textTheme.bodyMedium,
                       ),
                     ],
                   ),

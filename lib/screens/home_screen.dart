@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:recipe_app/provider/provider.dart';
-import 'package:unicons/unicons.dart';
-import 'screens.dart';
+import 'package:recipe_app/screens/recipe_detail_screen.dart';
+import 'package:recipe_app/screens/recipes_list_screen.dart';
 import 'package:recipe_app/utils/utils.dart';
 import 'package:recipe_app/widgets/widgets.dart';
-
+import 'package:unicons/unicons.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -16,51 +16,35 @@ class HomeScreen extends StatelessWidget {
       body: Padding(
         padding: const EdgeInsets.only(left: 10.0, right: 10.0, top: 10.0),
         child: SingleChildScrollView(
-          child:
-              Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            const SizedBox(
-              height: 40.0,
-            ),
-            const HomeLogoText(),
-            const SizedBox(
-              height: 10.0,
-            ),
-            const HomeHeaderRow(),
-            const SizedBox(
-              height: 20.0,
-            ),
-            const SearchField(),
-            const SizedBox(
-              height: 40.0,
-            ),
-            const HomeGrid(),
-            const SizedBox(
-              height: 40.0,
-            ),
-            Text(
-              'Popular Recipes',
-              style: Theme.of(context).textTheme.headline4,
-            ),
-            const SizedBox(
-              height: 20.0,
-            ),
-            const HomePopularGrid(),
-            const SizedBox(
-              height: 10.0,
-            )
-          ]),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const SizedBox(height: 40.0),
+              const HomeLogoText(),
+              const SizedBox(height: 10.0),
+              const HomeHeaderRow(),
+              const SizedBox(height: 20.0),
+              const SearchField(),
+              const SizedBox(height: 40.0),
+              const HomeGrid(),
+              const SizedBox(height: 40.0),
+              Text(
+                'Popular Recipes',
+                style: Theme.of(context).textTheme.headlineMedium,
+              ),
+              const SizedBox(height: 20.0),
+              const HomePopularGrid(),
+              const SizedBox(height: 10.0),
+            ],
+          ),
         ),
       ),
     );
   }
 }
 
-
-
 class HomeHeaderRow extends StatelessWidget {
-  const HomeHeaderRow({
-    Key? key,
-  }) : super(key: key);
+  const HomeHeaderRow({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -68,17 +52,15 @@ class HomeHeaderRow extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Text(
-          'Good Morning, Devina',
-          style: Theme.of(context).textTheme.headline4,
+          'Good Morning, User',
+          style: Theme.of(context).textTheme.headlineMedium,
         ),
-        const Spacer(
-          flex: 3,
-        ),
+        const Spacer(flex: 3),
         const Expanded(
           child: ProfileImage(
-              height: 50.0,
-              image:
-                  'https://images.unsplash.com/photo-1556911220-e15b29be8c8f?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1740&q=80'),
+            height: 50.0,
+            image: 'https://images.unsplash.com/photo-1556911220-e15b29be8c8f',
+          ),
         ),
       ],
     );
@@ -86,9 +68,7 @@ class HomeHeaderRow extends StatelessWidget {
 }
 
 class HomePopularGrid extends StatelessWidget {
-  const HomePopularGrid({
-    Key? key,
-  }) : super(key: key);
+  const HomePopularGrid({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -115,10 +95,8 @@ class HomePopularGrid extends StatelessWidget {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => const RecipeScreen(),
-                  settings: RouteSettings(
-                    arguments: popularRecipes[index],
-                  ),
+                  builder: (context) => const RecipeDetailScreen(),
+                  settings: RouteSettings(arguments: popularRecipes[index]),
                 ),
               );
             },
@@ -135,6 +113,7 @@ class HomeStack extends StatelessWidget {
   final double prepTime;
   final double cookTime;
   final double recipeReview;
+
   const HomeStack({
     Key? key,
     required this.image,
@@ -154,7 +133,7 @@ class HomeStack extends StatelessWidget {
             spreadRadius: 2,
             blurRadius: 5,
             offset: const Offset(0, 2),
-          ),
+          ), // Added missing closing parenthesis here
         ],
       ),
       child: Stack(
@@ -188,40 +167,36 @@ class HomeStack extends StatelessWidget {
                   children: [
                     Text(
                       text,
-                      style: Theme.of(context).textTheme.headline4,
+                      style: Theme.of(context).textTheme.headlineMedium,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                     ),
-                    const SizedBox(
-                      height: 5.0,
-                    ),
+                    const SizedBox(height: 5.0),
                     const Spacer(),
                     Row(
                       children: [
-                        const Icon(UniconsLine.clock),
-                        const SizedBox(
-                          width: 5.0,
-                        ),
+                        const Icon(UniconsLine.clock, size: 16),
+                        const SizedBox(width: 5.0),
                         Text(
-                          '${prepTime + cookTime} M Total',
+                          '${(prepTime + cookTime).toStringAsFixed(0)} M Total',
                           style: Theme.of(context)
                               .textTheme
-                              .headline3!
-                              .copyWith(color: Colors.black38),
+                              .bodyMedium!
+                              .copyWith(color: Colors.black54),
                         ),
                       ],
                     ),
                     const Spacer(),
                     Row(
                       children: [
-                        const Icon(UniconsLine.star),
-                        const SizedBox(
-                          width: 5.0,
-                        ),
+                        const Icon(UniconsLine.star, size: 16),
+                        const SizedBox(width: 5.0),
                         Text(
-                          recipeReview.toStringAsFixed(0),
+                          recipeReview.toStringAsFixed(1),
                           style: Theme.of(context)
                               .textTheme
-                              .headline3!
-                              .copyWith(color: Colors.black38),
+                              .bodyMedium!
+                              .copyWith(color: Colors.black54),
                         ),
                       ],
                     ),
@@ -237,9 +212,7 @@ class HomeStack extends StatelessWidget {
 }
 
 class HomeGrid extends StatelessWidget {
-  const HomeGrid({
-    Key? key,
-  }) : super(key: key);
+  const HomeGrid({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -249,7 +222,17 @@ class HomeGrid extends StatelessWidget {
         itemCount: iconList.length,
         scrollDirection: Axis.horizontal,
         itemBuilder: (context, index) {
+          final item = iconList[index];
           return InkWell(
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const RecipesListScreen(),
+                  settings: RouteSettings(arguments: item.category),
+                ),
+              );
+            },
             child: Container(
               width: 120.0,
               padding: const EdgeInsets.all(5.0),
@@ -260,28 +243,23 @@ class HomeGrid extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Image.asset(
-                     iconList[index].icon,
+                      item.icon,
+                      height: 40,
+                      width: 40,
+                      errorBuilder: (context, error, stackTrace) {
+                        return Icon(Icons.fastfood, size: 40);
+                      },
                     ),
-                    const SizedBox(
-                      height: 5.0,
-                    ),
+                    const SizedBox(height: 5.0),
                     Text(
-                      iconList[index].text,
-                      style: Theme.of(context).textTheme.bodyText2,
+                      item.text,
+                      style: Theme.of(context).textTheme.bodyMedium,
+                      textAlign: TextAlign.center,
                     ),
                   ],
                 ),
               ),
             ),
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const RecipesScreen(),
-                  settings: RouteSettings(arguments: items[index].category),
-                ),
-              );
-            },
           );
         },
       ),

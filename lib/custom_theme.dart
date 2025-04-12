@@ -7,37 +7,37 @@ class CustomTheme {
       scaffoldBackgroundColor: Colors.white,
       primaryColor: const Color(0xff084f57),
       textTheme: TextTheme(
-        headline1: GoogleFonts.openSans(
+        displayLarge: GoogleFonts.openSans(
           fontSize: 22.0.sp,
           fontWeight: FontWeight.w600,
           letterSpacing: 1.0,
           color: Colors.black87,
         ),
-        headline4: GoogleFonts.openSans(
+        headlineMedium: GoogleFonts.openSans(
           fontSize: 12.0.sp,
           fontWeight: FontWeight.w600,
           letterSpacing: 1.0,
           color: Colors.black87,
         ),
-        headline3: GoogleFonts.openSans(
+        displaySmall: GoogleFonts.openSans(
           fontSize: 10.0.sp,
           fontWeight: FontWeight.w600,
           letterSpacing: 1.0,
           color: Colors.black87,
         ),
-        headline2: GoogleFonts.openSans(
+        displayMedium: GoogleFonts.openSans(
           fontSize: 12.0.sp,
           fontWeight: FontWeight.w600,
           letterSpacing: 1.0,
           color: Colors.black87,
         ),
-        bodyText1: GoogleFonts.openSans(
+        bodyLarge: GoogleFonts.openSans(
           fontSize: 10.0.sp,
           letterSpacing: 1.0,
           fontWeight: FontWeight.w400,
         ),
-        bodyText2: GoogleFonts.openSans(fontSize: 10.0.sp, letterSpacing: 1.0),
-        headline5: GoogleFonts.openSans(fontSize: 12.0.sp, letterSpacing: 1.0),
+        bodyMedium: GoogleFonts.openSans(fontSize: 10.0.sp, letterSpacing: 1.0),
+        headlineSmall: GoogleFonts.openSans(fontSize: 12.0.sp, letterSpacing: 1.0),
       ),
       splashColor: const Color(0xff084f57),
       iconTheme: const IconThemeData(

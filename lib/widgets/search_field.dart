@@ -55,7 +55,7 @@ class _SearchFieldState extends State<SearchField> {
             },
           ),
           hintText: 'Search recipe here...',
-          hintStyle: Theme.of(context).textTheme.bodyText2,
+          hintStyle: Theme.of(context).textTheme.bodyMedium,
           enabledBorder: const OutlineInputBorder(
             borderSide: BorderSide(width: 1.0, color: Colors.white),
           ),
