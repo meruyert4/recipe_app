@@ -1,33 +1,35 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:provider/provider.dart';
-import 'package:recipe_app/screens/auth_wrapper.dart';
-import 'providers/auth_notifier.dart';
-import 'screens/auth/login_screen.dart';
-import 'screens/auth/register_screen.dart';
-import 'screens/home_screen.dart';
+import 'package:recipe_app/provider/provider.dart';
+import 'package:recipe_app/custom_theme.dart';
+import 'package:sizer/sizer.dart';
 
-void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
+import 'custom_navbar.dart';
+
+void main() {
   runApp(
-    ChangeNotifierProvider(
-      create: (_) => AuthNotifier(),
-      child: MyApp(),
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => ListOfRecipes()),
+        ChangeNotifierProvider(create: (_) => SavedProvider()),
+      ],
+      child: const MyApp(),
     ),
   );
 }
 
 class MyApp extends StatelessWidget {
+  const MyApp({Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      initialRoute: '/login',
-      routes: {
-        '/login': (context) => LoginScreen(),
-        '/register': (context) => RegisterScreen(),
-      },
-      home: AuthWrapper(),
-    );
+    return Sizer(builder: (context, orientation, deviceType) {
+      return MaterialApp(
+        title: 'Recipe App',
+        debugShowCheckedModeBanner: false,
+        theme: CustomTheme.lightTheme,
+        home: const CustomNavBar(),
+      );
+    });
   }
 }
