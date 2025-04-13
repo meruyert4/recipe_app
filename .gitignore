@@ -33,6 +33,9 @@ migrate_working_dir/
 .pub/
 /build/
 
+# large asset
+assets/recipe_dataset/
+
 # Symbolication related
 app.*.symbols
 
