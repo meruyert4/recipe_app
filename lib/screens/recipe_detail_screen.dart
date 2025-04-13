@@ -1,48 +1,52 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:recipe_app/models/models.dart';
 import 'package:recipe_app/provider/provider.dart';
 import 'package:unicons/unicons.dart';
+import 'package:recipe_app/models/recipe.dart' as recipe_model;
 
 class RecipeDetailScreen extends StatelessWidget {
   const RecipeDetailScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    final popularRecipes = ModalRoute.of(context)!.settings.arguments as Recipe;
+    final recipe = ModalRoute.of(context)!.settings.arguments as recipe_model.Recipe;
+    
     return Scaffold(
-      body: SingleChildScrollView(
-        child: SizedBox(
-          height: MediaQuery.of(context).size.height * 1.20,
-          width: MediaQuery.of(context).size.width,
-          child: Stack(clipBehavior: Clip.none, children: [
-            CachedNetworkImage(
-              imageUrl: popularRecipes.recipeImage,
-              fit: BoxFit.cover,
-              width: MediaQuery.of(context).size.width,
-              height: MediaQuery.of(context).size.height / 2.5,
-            ),
-            Positioned(
-              top: 180.0,
-              left: 18.0,
-              child: Column(
-                children: const [
-                  RecipeAbout(),
-                  SizedBox(height: 20.0),
-                  RecipeIngredient(),
-                  SizedBox(height: 20.0),
-                  RecipeMethod(),
-                ],
+      body: CustomScrollView(
+        slivers: [
+          SliverAppBar(
+            expandedHeight: 300,
+            flexibleSpace: FlexibleSpaceBar(
+              background: Image.network(
+                recipe.imageUrl, // Use the getter we added
+                fit: BoxFit.cover,
               ),
             ),
-          ]),
-        ),
+          ),
+          SliverList(
+            delegate: SliverChildListDelegate([
+              Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(recipe.title, style: Theme.of(context).textTheme.headline4),
+                    // Add more recipe details here
+                  ],
+                ),
+              ),
+            ]),
+          ),
+        ],
       ),
     );
   }
 }
 
+extension on TextTheme {
+  get headline4 => null;
+}
 class RecipeMethod extends StatelessWidget {
   const RecipeMethod({Key? key}) : super(key: key);
 

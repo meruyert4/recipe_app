@@ -1,39 +1,28 @@
-// lib/models/recipe_model.dart
 class Recipe {
-  final String recipeId;
-  final String recipeName;
-  final List<String> recipeIngredients;
-  final String recipeMethod;
-  final String recipeImage;
-  final String recipeCategory;
-  final double prepTime;
-  final double cookTime;
-  final int recipeServing;
+  final String title;
+  final List<String> ingredients;
+  final String instructions;
+  final String imageName;
+  final List<String> cleanedIngredients;
 
   Recipe({
-    required this.recipeId,
-    required this.recipeName,
-    required this.recipeIngredients,
-    required this.recipeMethod,
-    required this.recipeImage,
-    required this.recipeCategory,
-    required this.prepTime,
-    required this.cookTime,
-    required this.recipeServing,
+    required this.title,
+    required this.ingredients,
+    required this.instructions,
+    required this.imageName,
+    required this.cleanedIngredients,
   });
 
-  // Add fromCsv factory constructor if needed
-  factory Recipe.fromCsv(List<dynamic> fields) {
+  factory Recipe.fromCsv(List<dynamic> values) {
     return Recipe(
-      recipeId: fields[0],
-      recipeName: fields[1],
-      recipeIngredients: fields[2].split(','), // Convert string to List
-      recipeMethod: fields[3],
-      recipeImage: fields[4],
-      recipeCategory: fields[5] ?? 'Uncategorized',
-      prepTime: double.tryParse(fields[6]) ?? 0,
-      cookTime: double.tryParse(fields[7]) ?? 0,
-      recipeServing: int.tryParse(fields[8]) ?? 1,
+      title: values[0],
+      ingredients: values[1],
+      instructions: values[2],
+      imageName: values[3],
+      cleanedIngredients: values[4],
     );
   }
+
+  // Getter for the image URL
+  String get imageUrl => 'assets/recipe_dataset/images/$imageName';
 }

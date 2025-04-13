@@ -10,7 +10,7 @@ void main() {
   runApp(
     MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (_) => ListOfRecipes()),
+        ChangeNotifierProvider(create: (_) => RecipeProvider()..loadRecipes()),
         ChangeNotifierProvider(create: (_) => SavedProvider()),
       ],
       child: const MyApp(),

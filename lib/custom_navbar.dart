@@ -22,8 +22,10 @@ class _CustomNavBarState extends State<CustomNavBar>
 
   static List<Widget> pages = [
     const HomeScreen(),
-    const CategoryScreen(),
+    const RecipesListScreen(),
     const SavedScreen(),
+    const ForumScreen(),
+    const OpenFridgeScreen(),
     const ProfileScreen(),
   ];
 
@@ -47,18 +49,25 @@ class _CustomNavBarState extends State<CustomNavBar>
             label: 'Home',
           ),
           BottomNavigationBarItem(
-            icon: Icon(UniconsLine.apps),
-            label: 'Category',
+            icon: Icon(UniconsLine.restaurant),
+            label: 'Recipes',
           ),
           BottomNavigationBarItem(
             icon: Icon(UniconsLine.bookmark),
             label: 'Saved',
           ),
           BottomNavigationBarItem(
+            icon: Icon(UniconsLine.comments),
+            label: "Forum"),
+          BottomNavigationBarItem(
+            icon: Icon(UniconsLine.utensils),
+            label: "Fridge"),
+            BottomNavigationBarItem(
             icon: Icon(UniconsLine.user),
             label: 'Profile',
           ),
         ],
+        
       ),
       body: pages.elementAt(selectedIndex),
     );
