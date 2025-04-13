@@ -9,31 +9,38 @@ class RecipeProvider extends ChangeNotifier {
 
   List<Recipe> get recipes => _recipes;
 
-   List<Recipe> get popularRecipes {
+  List<Recipe> get popularRecipes {
     // You can change the logic here to define what you want as "popular"
     return _recipes.take(5).toList();
   }
 
   // Load recipes from CSV file
-    Future<void> loadRecipes() async {
-      if (_recipes.isNotEmpty) return; // Avoid reloading
-      final csvData = await rootBundle.loadString('assets/recipe_dataset/recipes.csv');
-      _recipes = parseCsv(csvData); // Your parsing logic
-      notifyListeners();
-    }
+  Future<void> loadRecipes() async {
+  if (_recipes.isNotEmpty) return; // Avoid reloading
 
-    List<Recipe> parseCsv(String csvContent) {
-        final rows = const CsvToListConverter().convert(csvContent, eol: '\n');
-        if (rows.isEmpty) return [];
+  print("Loading recipes...");
+  
+  final csvData = await rootBundle.loadString('assets/recipe_dataset/recipes.csv');
+  print(csvData.substring(0, 200)); // Inspect format
 
-        // Remove header row
-        rows.removeAt(0);
+  _recipes = parseCsv(csvData);
+  print("Parsed recipes count: ${_recipes.length}");
 
-        return rows.map((row) => Recipe.fromCsv(row)).toList();
-      }
+  notifyListeners();
+}
 
-    
-   void searchRecipe(String query) {
+
+  List<Recipe> parseCsv(String csvContent) {
+    final rows = const CsvToListConverter().convert(csvContent, eol: '\n');
+    if (rows.isEmpty) return [];
+
+    // Remove header row
+    rows.removeAt(0);
+
+    return rows.map((row) => Recipe.fromCsv(row)).toList();
+  }
+
+  void searchRecipe(String query) {
     if (query.isEmpty) {
       loadRecipes();
     } else {
@@ -43,5 +50,4 @@ class RecipeProvider extends ChangeNotifier {
       notifyListeners();
     }
   }
-  
 }
