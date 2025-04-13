@@ -37,7 +37,7 @@ flutter:
       - assets/cake.png
       - assets/beverage.png
       - assets/recipebook.gif
-      - ../recipe_dataset/recipes.csv
-      - ../recipe_dataset/images/
+      - assets/recipe_dataset/recipes.csv
+      - assets/recipe_dataset/images/
 
 
