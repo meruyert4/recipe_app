@@ -11,42 +11,51 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: FutureBuilder(
-        future: Provider.of<RecipeProvider>(context, listen: false).loadRecipes(),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          } else if (snapshot.hasError) {
-            return const Center(child: Text('Error loading recipes'));
-          } else {
-            return Padding(
-              padding: const EdgeInsets.all(10.0),
-              child: SingleChildScrollView(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const SizedBox(height: 40.0),
-                    const HomeLogoText(),
-                    const SizedBox(height: 10.0),
-                    const HomeHeaderRow(),
-                    const SizedBox(height: 20.0),
-                    const SearchField(),
-                    const SizedBox(height: 40.0),
-                    const HomeGrid(),
-                    const SizedBox(height: 40.0),
-                    Text(
-                      'Popular Recipes',
-                      style: Theme.of(context).textTheme.headlineMedium,
-                    ),
-                    const SizedBox(height: 20.0),
-                    const HomePopularGrid(),
-                    const SizedBox(height: 10.0),
-                  ],
+      backgroundColor: Colors.grey[100],
+      body: SafeArea(
+        child: FutureBuilder(
+          future: Provider.of<RecipeProvider>(context, listen: false).loadRecipes(),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(child: CircularProgressIndicator());
+            } else if (snapshot.hasError) {
+              return const Center(child: Text('Error loading recipes'));
+            } else {
+              return Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                child: SingleChildScrollView(
+                  physics: const BouncingScrollPhysics(),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const SizedBox(height: 24.0),
+                      const HomeLogoText(),
+                      const SizedBox(height: 16.0),
+                      const HomeHeaderRow(),
+                      const SizedBox(height: 24.0),
+                      const SearchField(),
+                      const SizedBox(height: 32.0),
+                      Text(
+                        'Categories',
+                        style: Theme.of(context).textTheme.titleLarge!.copyWith(fontWeight: FontWeight.bold),
+                      ),
+                      const SizedBox(height: 12.0),
+                      const HomeGrid(),
+                      const SizedBox(height: 32.0),
+                      Text(
+                        'Popular Recipes',
+                        style: Theme.of(context).textTheme.titleLarge!.copyWith(fontWeight: FontWeight.bold),
+                      ),
+                      const SizedBox(height: 16.0),
+                      const HomePopularGrid(),
+                      const SizedBox(height: 20.0),
+                    ],
+                  ),
                 ),
-              ),
-            );
-          }
-        },
+              );
+            }
+          },
+        ),
       ),
     );
   }
@@ -60,8 +69,8 @@ class HomeHeaderRow extends StatelessWidget {
     return Row(
       children: [
         Text(
-          'Good Morning, User',
-          style: Theme.of(context).textTheme.headlineMedium,
+          'Good Morning, User 👋',
+          style: Theme.of(context).textTheme.titleMedium!.copyWith(fontWeight: FontWeight.w600),
         ),
         const Spacer(),
         const ProfileImage(
@@ -82,13 +91,13 @@ class HomeGrid extends StatelessWidget {
     final recipes = recipeProvider.recipes;
 
     return SizedBox(
-      height: 120.0,
+      height: 130.0,
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
         itemCount: recipes.length,
         itemBuilder: (context, index) {
           final item = recipes[index];
-          return InkWell(
+          return GestureDetector(
             onTap: () {
               Navigator.push(
                 context,
@@ -100,29 +109,37 @@ class HomeGrid extends StatelessWidget {
             },
             child: Container(
               width: 120.0,
-              padding: const EdgeInsets.all(5.0),
-              child: Material(
+              margin: const EdgeInsets.only(right: 12.0),
+              padding: const EdgeInsets.all(10.0),
+              decoration: BoxDecoration(
                 color: Colors.white,
-                elevation: 2.0,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Image.asset(
-                      item.imageUrl,
-                      height: 40.0,
-                      width: 40.0,
-                      errorBuilder: (context, error, stackTrace) {
-                        return const Icon(Icons.fastfood, size: 40);
-                      },
-                    ),
-                    const SizedBox(height: 5.0),
-                    Text(
-                      item.title,
-                      style: Theme.of(context).textTheme.bodyMedium,
-                      textAlign: TextAlign.center,
-                    ),
-                  ],
-                ),
+                borderRadius: BorderRadius.circular(16.0),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black12,
+                    blurRadius: 6.0,
+                    offset: const Offset(0, 3),
+                  ),
+                ],
+              ),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Image.asset(
+                    item.imageUrl,
+                    height: 40.0,
+                    width: 40.0,
+                    errorBuilder: (context, error, stackTrace) => const Icon(Icons.fastfood, size: 40),
+                  ),
+                  const SizedBox(height: 8.0),
+                  Text(
+                    item.title,
+                    style: Theme.of(context).textTheme.bodyMedium,
+                    textAlign: TextAlign.center,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ],
               ),
             ),
           );
@@ -131,7 +148,6 @@ class HomeGrid extends StatelessWidget {
     );
   }
 }
-
 class HomePopularGrid extends StatelessWidget {
   const HomePopularGrid({Key? key}) : super(key: key);
 
@@ -143,24 +159,31 @@ class HomePopularGrid extends StatelessWidget {
     return SizedBox(
       height: 350.0,
       child: ListView.builder(
-        itemCount: popularRecipes.length,
         scrollDirection: Axis.horizontal,
+        itemCount: popularRecipes.length,
         itemBuilder: (context, index) {
-          return InkWell(
+          final recipe = popularRecipes[index];
+          
+          // Check if image is a URL or local asset
+          bool isNetworkImage = recipe.imageName.startsWith('http');
+
+          return GestureDetector(
             onTap: () {
               Navigator.push(
                 context,
                 MaterialPageRoute(
                   builder: (context) => const RecipeDetailScreen(),
-                  settings: RouteSettings(arguments: popularRecipes[index]),
+                  settings: RouteSettings(arguments: recipe),
                 ),
               );
             },
             child: Padding(
               padding: const EdgeInsets.only(right: 20.0),
               child: HomeStack(
-                image: popularRecipes[index].imageName,
-                text: popularRecipes[index].title,
+                image: isNetworkImage
+                    ? recipe.imageName // Network image
+                    : 'assets/recipe_dataset/images/${recipe.imageName}.jpg', // Local asset image
+                text: recipe.title,
                 prepTime: 30.0,
                 cookTime: 45.0,
                 recipeReview: 4.5,
@@ -172,6 +195,7 @@ class HomePopularGrid extends StatelessWidget {
     );
   }
 }
+
 
 class HomeStack extends StatelessWidget {
   final String image;
@@ -204,11 +228,12 @@ class HomeStack extends StatelessWidget {
       ),
       child: Stack(
         children: [
+          // Use BoxFit.cover for consistent image sizing
           Image.asset(
             image,
             height: 350.0,
             width: 200.0,
-            fit: BoxFit.cover,
+            fit: BoxFit.cover, // Ensures the image fills the space while preserving its aspect ratio
             errorBuilder: (context, error, stackTrace) {
               return const Icon(Icons.fastfood, size: 40);
             },

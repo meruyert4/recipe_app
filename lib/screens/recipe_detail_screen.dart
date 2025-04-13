@@ -1,12 +1,16 @@
+// lib/screens/recipe_detail_screen.dart
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:recipe_app/models/recipe.dart';
+import 'package:recipe_app/provider/saved_provider.dart';
 
 class RecipeDetailScreen extends StatelessWidget {
   const RecipeDetailScreen({Key? key}) : super(key: key);
-
   @override
   Widget build(BuildContext context) {
     final Recipe recipe = ModalRoute.of(context)!.settings.arguments as Recipe;
+    final savedProvider = Provider.of<SavedProvider>(context);
+    final isSaved = savedProvider.getSaved.containsKey(recipe.title);
 
     return Scaffold(
       appBar: AppBar(
@@ -16,15 +20,12 @@ class RecipeDetailScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Recipe Image
             Image.asset(
               recipe.imageUrl,
               width: double.infinity,
               height: 250,
               fit: BoxFit.cover,
             ),
-
-            // Title
             Padding(
               padding: const EdgeInsets.all(16.0),
               child: Text(
@@ -34,8 +35,6 @@ class RecipeDetailScreen extends StatelessWidget {
                     ),
               ),
             ),
-
-            // Ingredients Section
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16.0),
               child: Text(
@@ -69,8 +68,6 @@ class RecipeDetailScreen extends StatelessWidget {
                 }).toList(),
               ),
             ),
-
-            // Instructions Section
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16.0),
               child: Text(
@@ -88,8 +85,19 @@ class RecipeDetailScreen extends StatelessWidget {
                 style: Theme.of(context).textTheme.bodyLarge,
               ),
             ),
-
             const SizedBox(height: 20),
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: ElevatedButton(
+                onPressed: () {
+                  Provider.of<SavedProvider>(context, listen: false)
+                      .addAndRemoveFromSaved(recipe);
+                },
+                child: Text(
+                  isSaved ? 'Remove from Saved' : 'Save Recipe',
+                ),
+              ),
+            ),
           ],
         ),
       ),

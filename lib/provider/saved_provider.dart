@@ -1,35 +1,30 @@
+// lib/provider/saved_provider.dart
 import 'package:flutter/material.dart';
+import 'package:recipe_app/models/recipe.dart';
 import 'package:recipe_app/models/saved_recipes.dart';
 
 class SavedProvider with ChangeNotifier {
-  final Map<String, SavedRecipes> _list = {};
-  Map<String, SavedRecipes> get getSaved => _list;
+  final Map<String, SavedRecipe> _savedRecipes = {};
 
-  void addAndRemoveFromSaved(String recipeId, String recipeCategory,
-      double cookTime, double prepTime, String recipeImage, String recipeName) {
-    if (_list.containsKey(recipeId)) {
-      removeRecipe(recipeId);
+  Map<String, SavedRecipe> get getSaved => _savedRecipes;
+
+  void addRecipe(Recipe recipe) {
+    final savedRecipe = SavedRecipe.fromRecipe(recipe);
+    _savedRecipes[recipe.title] = savedRecipe;
+    notifyListeners();
+  }
+
+  void removeRecipe(String title) {
+    _savedRecipes.remove(title);
+    notifyListeners();
+  }
+
+  void addAndRemoveFromSaved(Recipe recipe) {
+    if (_savedRecipes.containsKey(recipe.title)) {
+      _savedRecipes.remove(recipe.title);
     } else {
-      _list.putIfAbsent(
-          recipeId,
-          () => SavedRecipes(
-              recipeId: recipeId,
-              recipeCategory: recipeCategory,
-              cookTime: cookTime,
-              prepTime: prepTime,
-              recipeImage: recipeImage,
-              recipeName: recipeName));
+      _savedRecipes[recipe.title] = SavedRecipe.fromRecipe(recipe);
     }
-    notifyListeners();
-  }
-
-  void clearRecipes() {
-    _list.clear();
-    notifyListeners();
-  }
-
-  void removeRecipe(String recipeId) {
-    _list.remove(recipeId);
     notifyListeners();
   }
 }
