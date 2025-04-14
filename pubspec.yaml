@@ -31,12 +31,6 @@ flutter:
   uses-material-design: true
 
   assets:
-      - assets/coffee.png
-      - assets/lunch-box.png
-      - assets/dish.png
-      - assets/fruits.png
-      - assets/cake.png
-      - assets/beverage.png
       - assets/recipebook.gif
       - assets/recipe_dataset/recipes.csv
       - assets/recipe_dataset/images/

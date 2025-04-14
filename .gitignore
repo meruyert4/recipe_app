@@ -36,9 +36,6 @@ migrate_working_dir/
 # large asset
 assets/recipe_dataset/
 
-#firebase
-.firebase.json
-
 # Symbolication related
 app.*.symbols
 

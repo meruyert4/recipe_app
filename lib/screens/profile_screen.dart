@@ -126,13 +126,13 @@ class ProfileHeader extends StatelessWidget {
           height: 10.0,
         ),
         Text(
-          'Devina Hermawan',
+          'Temutjin Koszhanov',
           style: Theme.of(context).textTheme.headlineMedium,
         ),
         const SizedBox(
           height: 5.0,
         ),
-        Text('Email Address', style: Theme.of(context).textTheme.headlineSmall),
+        Text('tamutdzhin@gmail.com', style: Theme.of(context).textTheme.headlineSmall),
       ],
     );
   }
