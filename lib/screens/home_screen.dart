@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:recipe_app/provider/provider.dart';
@@ -64,12 +65,19 @@ class HomeScreen extends StatelessWidget {
 class HomeHeaderRow extends StatelessWidget {
   const HomeHeaderRow({Key? key}) : super(key: key);
 
+  
+
   @override
   Widget build(BuildContext context) {
+    IconButton(
+  icon: const Icon(Icons.logout),
+  onPressed: () async {
+    await FirebaseAuth.instance.signOut();
+  },);
     return Row(
       children: [
         Text(
-          'Good Morning, User 👋',
+         'Good Morning, ${FirebaseAuth.instance.currentUser?.displayName ?? 'User'} 👋',
           style: Theme.of(context).textTheme.titleMedium!.copyWith(fontWeight: FontWeight.w600),
         ),
         const Spacer(),
@@ -79,7 +87,9 @@ class HomeHeaderRow extends StatelessWidget {
         ),
       ],
     );
+    
   }
+
 }
 
 class HomeGrid extends StatelessWidget {
