@@ -3,10 +3,16 @@ import 'package:provider/provider.dart';
 import 'package:recipe_app/provider/provider.dart';
 import 'package:recipe_app/custom_theme.dart';
 import 'package:sizer/sizer.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:recipe_app/firebase_options.dart';
+import 'package:recipe_app/screens/auth_wrapper.dart';
 
-import 'custom_navbar.dart';
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
 
-void main() {
   runApp(
     MultiProvider(
       providers: [
@@ -28,7 +34,7 @@ class MyApp extends StatelessWidget {
         title: 'Recipe App',
         debugShowCheckedModeBanner: false,
         theme: CustomTheme.lightTheme,
-        home: const CustomNavBar(),
+        home: const AuthWrapper(),
       );
     });
   }
