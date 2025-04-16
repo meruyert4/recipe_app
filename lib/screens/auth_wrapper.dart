@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:recipe_app/custom_navbar.dart;
+import 'package:recipe_app/custom_navbar.dart';
+import 'package:recipe_app/screens/auth/login_screen.dart';
 
 class AuthWrapper extends StatelessWidget {
   const AuthWrapper({Key? key}) : super(key: key);
@@ -11,7 +12,6 @@ class AuthWrapper extends StatelessWidget {
       stream: FirebaseAuth.instance.authStateChanges(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.active) {
-          // If the user is logged in, navigate to CustomNavBar
           if (snapshot.hasData) {
             return const CustomNavBar();
           }

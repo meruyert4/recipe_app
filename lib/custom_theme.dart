@@ -44,4 +44,6 @@ class CustomTheme {
         color: Color(0xff084f57),
       ),
   );
+
+//  static final darkTheme = 
 }
