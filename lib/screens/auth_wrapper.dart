@@ -12,7 +12,6 @@ class AuthWrapper extends StatelessWidget {
       stream: FirebaseAuth.instance.authStateChanges(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.active) {
-          // If the user is logged in, navigate to CustomNavBar
           if (snapshot.hasData) {
             return const CustomNavBar();
           }
