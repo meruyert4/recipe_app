@@ -6,8 +6,8 @@ import 'package:sizer/sizer.dart';
 
 import 'package:recipe_app/provider/provider.dart';
 import 'package:recipe_app/firebase_options.dart';
-import 'package:recipe_app/screens/home_screen.dart';
 import 'package:recipe_app/screens/auth/login_screen.dart';
+import 'package:recipe_app/custom_navbar.dart';
 import 'custom_theme.dart';
 
 void main() async {
@@ -59,7 +59,7 @@ class AuthGate extends StatelessWidget {
           );
         } else if (snapshot.hasData) {
           // User is logged in
-          return const HomeScreen();
+          return const CustomNavBar();
         } else {
           // Not logged in
           return const LoginScreen();
