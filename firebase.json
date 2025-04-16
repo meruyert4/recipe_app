@@ -1,1 +1,39 @@
-{"flutter":{"platforms":{"android":{"default":{"projectId":"recipeapp-e8eae","appId":"1:1043018510793:android:3dda7c04ae594c55ca7818","fileOutput":"android/app/google-services.json"}},"ios":{"default":{"projectId":"recipeapp-e8eae","appId":"1:1043018510793:ios:520ccb6127eb9977ca7818","uploadDebugSymbols":false,"fileOutput":"ios/Runner/GoogleService-Info.plist"}},"macos":{"default":{"projectId":"recipeapp-e8eae","appId":"1:1043018510793:ios:520ccb6127eb9977ca7818","uploadDebugSymbols":false,"fileOutput":"macos/Runner/GoogleService-Info.plist"}},"dart":{"lib/firebase_options.dart":{"projectId":"recipeapp-e8eae","configurations":{"android":"1:1043018510793:android:3dda7c04ae594c55ca7818","ios":"1:1043018510793:ios:520ccb6127eb9977ca7818","macos":"1:1043018510793:ios:520ccb6127eb9977ca7818"}}}}}}
+{
+    "flutter": {
+        "platforms": {
+            "android": {
+                "default": {
+                    "projectId": "recipeapp-e8eae",
+                    "appId": "1:1043018510793:android:3dda7c04ae594c55ca7818",
+                    "fileOutput": "android/app/google-services.json"
+                }
+            },
+            "ios": {
+                "default": {
+                    "projectId": "recipeapp-e8eae",
+                    "appId": "1:1043018510793:ios:520ccb6127eb9977ca7818",
+                    "uploadDebugSymbols": false,
+                    "fileOutput": "ios/Runner/GoogleService-Info.plist"
+                }
+            },
+            "macos": {
+                "default": {
+                    "projectId": "recipeapp-e8eae",
+                    "appId": "1:1043018510793:ios:520ccb6127eb9977ca7818",
+                    "uploadDebugSymbols": false,
+                    "fileOutput": "macos/Runner/GoogleService-Info.plist"
+                }
+            },
+            "dart": {
+                "lib/firebase_options.dart": {
+                    "projectId": "recipeapp-e8eae",
+                    "configurations": {
+                        "android": "1:1043018510793:android:3dda7c04ae594c55ca7818",
+                        "ios": "1:1043018510793:ios:520ccb6127eb9977ca7818",
+                        "macos": "1:1043018510793:ios:520ccb6127eb9977ca7818"
+                    }
+                }
+            }
+        }
+    }
+}

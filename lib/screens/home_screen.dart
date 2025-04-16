@@ -148,6 +148,7 @@ class HomeGrid extends StatelessWidget {
     );
   }
 }
+
 class HomePopularGrid extends StatelessWidget {
   const HomePopularGrid({Key? key}) : super(key: key);
 
@@ -195,7 +196,6 @@ class HomePopularGrid extends StatelessWidget {
     );
   }
 }
-
 
 class HomeStack extends StatelessWidget {
   final String image;

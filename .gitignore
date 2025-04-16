@@ -36,14 +36,15 @@ migrate_working_dir/
 # large asset
 assets/recipe_dataset/
 
-#firebase
-.firebase.json
-
 # Symbolication related
 app.*.symbols
 
 # Obfuscation related
 app.*.map.json
+
+# firebase
+.firebase.json
+/lib/firebase_options.dart
 
 # Android Studio will place build artifacts here
 /android/app/debug

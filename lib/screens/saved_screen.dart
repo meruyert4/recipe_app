@@ -6,7 +6,7 @@ import 'package:sizer/sizer.dart';
 import 'package:unicons/unicons.dart';
 import 'package:recipe_app/custom_navbar.dart';
 import 'package:recipe_app/screens/recipe_detail_screen.dart';
-import 'package:recipe_app/models/recipe.dart';
+
 
 class SavedScreen extends StatelessWidget {
   const SavedScreen({Key? key}) : super(key: key);
