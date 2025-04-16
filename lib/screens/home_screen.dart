@@ -89,7 +89,6 @@ class HomeGrid extends StatelessWidget {
   Widget build(BuildContext context) {
     final recipeProvider = Provider.of<RecipeProvider>(context);
     final recipes = recipeProvider.recipes;
-
     return SizedBox(
       height: 130.0,
       child: ListView.builder(
@@ -148,7 +147,6 @@ class HomeGrid extends StatelessWidget {
     );
   }
 }
-
 class HomePopularGrid extends StatelessWidget {
   const HomePopularGrid({Key? key}) : super(key: key);
 
