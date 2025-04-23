@@ -31,9 +31,12 @@ class _CustomNavBarState extends State<CustomNavBar>
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
     return Scaffold(
       bottomNavigationBar: BottomNavigationBar(
-        backgroundColor: Colors.white,
+       backgroundColor: Theme.of(context).bottomNavigationBarTheme.backgroundColor,
         elevation: 4.0,
         currentIndex: selectedIndex,
         onTap: _onItemTapped,
@@ -41,7 +44,8 @@ class _CustomNavBarState extends State<CustomNavBar>
         selectedFontSize: 10.0.sp,
         iconSize: 18.sp,
         showUnselectedLabels: true,
-        selectedItemColor: Theme.of(context).iconTheme.color,
+        selectedItemColor: theme.primaryColor,
+        unselectedItemColor: theme.unselectedWidgetColor ?? (isDark ? Colors.grey[600] : Colors.grey),
         type: BottomNavigationBarType.fixed,
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
@@ -58,16 +62,17 @@ class _CustomNavBarState extends State<CustomNavBar>
           ),
           BottomNavigationBarItem(
             icon: Icon(UniconsLine.comments),
-            label: "Forum"),
+            label: "Forum",
+          ),
           BottomNavigationBarItem(
             icon: Icon(UniconsLine.utensils),
-            label: "Fridge"),
-            BottomNavigationBarItem(
+            label: "Fridge",
+          ),
+          BottomNavigationBarItem(
             icon: Icon(UniconsLine.user),
             label: 'Profile',
           ),
         ],
-        
       ),
       body: pages.elementAt(selectedIndex),
     );

@@ -4,6 +4,7 @@ import 'package:unicons/unicons.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'edit_profile_screen.dart';
+import 'package:recipe_app/screens/screens.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({Key? key}) : super(key: key);
@@ -158,7 +159,17 @@ class ProfileListView extends StatelessWidget {
             },
           ),
           Divider(color: Colors.grey.shade400, indent: 10.0, endIndent: 10.0),
-          const ProfileListTile(text: 'Settings', icon: UniconsLine.setting),
+          ProfileListTile(
+            text: 'Settings',
+            icon: UniconsLine.setting,
+            onTapAction: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => const SettingsScreen()), 
+              );
+            },
+          ),
           Divider(color: Colors.grey.shade400, indent: 10.0, endIndent: 10.0),
           const ProfileListTile(text: 'App Info', icon: UniconsLine.info_circle),
           Divider(color: Colors.grey.shade400, indent: 10.0, endIndent: 10.0),

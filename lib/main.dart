@@ -5,6 +5,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:sizer/sizer.dart';
 
 import 'package:recipe_app/provider/provider.dart';
+import 'package:recipe_app/provider/theme_provider.dart';
 import 'package:recipe_app/firebase_options.dart';
 import 'package:recipe_app/screens/auth/login_screen.dart';
 import 'package:recipe_app/custom_navbar.dart';
@@ -21,6 +22,7 @@ void main() async {
       providers: [
         ChangeNotifierProvider(create: (_) => RecipeProvider()..loadRecipes()),
         ChangeNotifierProvider(create: (_) => SavedProvider()),
+        ChangeNotifierProvider(create: (_) => ThemeProvider()), // <- here
       ],
       child: const MyApp(),
     ),
@@ -32,12 +34,16 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final themeProvider = Provider.of<ThemeProvider>(context);
+
     return Sizer(
       builder: (context, orientation, deviceType) {
         return MaterialApp(
           title: 'FairyFridge',
           debugShowCheckedModeBanner: false,
+          themeMode: themeProvider.themeMode, // <- dynamic mode
           theme: CustomTheme.lightTheme,
+          darkTheme: CustomTheme.darkTheme,
           home: const AuthGate(),
         );
       },
@@ -51,17 +57,15 @@ class AuthGate extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<User?>(
-      stream: FirebaseAuth.instance.authStateChanges(), // listens to login/logout
+      stream: FirebaseAuth.instance.authStateChanges(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Scaffold(
             body: Center(child: CircularProgressIndicator()),
           );
         } else if (snapshot.hasData) {
-          // User is logged in
           return const CustomNavBar();
         } else {
-          // Not logged in
           return const LoginScreen();
         }
       },

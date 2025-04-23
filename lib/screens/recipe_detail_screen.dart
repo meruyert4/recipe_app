@@ -6,6 +6,7 @@ import 'package:recipe_app/provider/saved_provider.dart';
 
 class RecipeDetailScreen extends StatelessWidget {
   const RecipeDetailScreen({Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     final Recipe recipe = ModalRoute.of(context)!.settings.arguments as Recipe;
@@ -45,8 +46,8 @@ class RecipeDetailScreen extends StatelessWidget {
               child: Text(
                 recipe.title,
                 style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ),
             Padding(
@@ -54,9 +55,9 @@ class RecipeDetailScreen extends StatelessWidget {
               child: Text(
                 'Ingredients',
                 style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      color: Colors.green[800],
-                      fontWeight: FontWeight.w600,
-                    ),
+                  color: Colors.green[800],
+                  fontWeight: FontWeight.w600,
+                ),
               ),
             ),
             Padding(
@@ -87,9 +88,9 @@ class RecipeDetailScreen extends StatelessWidget {
               child: Text(
                 'Instructions',
                 style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      color: Colors.orange[800],
-                      fontWeight: FontWeight.w600,
-                    ),
+                  color: Colors.orange[800],
+                  fontWeight: FontWeight.w600,
+                ),
               ),
             ),
             Padding(

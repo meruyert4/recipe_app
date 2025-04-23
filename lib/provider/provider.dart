@@ -1,5 +1,6 @@
 export 'recipe_provider.dart';
 export 'saved_provider.dart';
+export 'theme_provider.dart';
 
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';

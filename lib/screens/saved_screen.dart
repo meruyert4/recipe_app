@@ -7,13 +7,14 @@ import 'package:unicons/unicons.dart';
 import 'package:recipe_app/custom_navbar.dart';
 import 'package:recipe_app/screens/recipe_detail_screen.dart';
 
-
 class SavedScreen extends StatelessWidget {
   const SavedScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     final savedProvider = Provider.of<SavedProvider>(context);
+    final theme = Theme.of(context); // Get the current theme
+
     return Scaffold(
       body: Padding(
         padding: const EdgeInsets.only(left: 10.0, right: 10.0, top: 10.0),
@@ -40,6 +41,7 @@ class _SavedRecipesState extends State<SavedRecipes> {
   Widget build(BuildContext context) {
     final savedProvider = Provider.of<SavedProvider>(context);
     final savedList = savedProvider.getSaved.values.toList();
+    final theme = Theme.of(context); // Get the current theme
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -47,7 +49,7 @@ class _SavedRecipesState extends State<SavedRecipes> {
         SizedBox(height: 6.0.h),
         Text(
           'Saved',
-          style: Theme.of(context).textTheme.displayLarge,
+          style: theme.textTheme.displayLarge, // Apply theme
         ),
         SizedBox(height: 4.0.h),
         const TabRow(),
@@ -86,14 +88,14 @@ class _SavedRecipesState extends State<SavedRecipes> {
                     context,
                     MaterialPageRoute(
                       builder: (context) => const RecipeDetailScreen(),
-                      settings: RouteSettings(arguments: recipe.toRecipe()), // FIXED LINE
+                      settings: RouteSettings(arguments: recipe.toRecipe()),
                     ),
                   );
                 },
                 child: SizedBox(
                   height: 20.0.h,
                   child: Material(
-                    color: Colors.white,
+                    color: theme.cardColor, // Apply theme card color
                     elevation: 2.0,
                     child: Row(
                       children: [
@@ -115,19 +117,22 @@ class _SavedRecipesState extends State<SavedRecipes> {
                               children: [
                                 Text(
                                   recipe.title,
-                                  style:
-                                      Theme.of(context).textTheme.headlineMedium,
+                                  style: theme.textTheme.headlineMedium, // Apply theme
                                   maxLines: 2,
                                   overflow: TextOverflow.ellipsis,
                                 ),
                                 SizedBox(height: 1.5.h),
                                 Row(
                                   children: [
-                                    Icon(UniconsLine.clock, size: 16.0, color: Colors.grey.shade500),
+                                    Icon(
+                                      UniconsLine.clock,
+                                      size: 16.0,
+                                      color: theme.iconTheme.color, // Apply theme icon color
+                                    ),
                                     SizedBox(width: 1.5.w),
                                     Text(
                                       '${recipe.cookTime.toStringAsFixed(0)} M Prep',
-                                      style: Theme.of(context).textTheme.bodyMedium,
+                                      style: theme.textTheme.bodyMedium, // Apply theme body text style
                                     ),
                                   ],
                                 ),
@@ -153,6 +158,8 @@ class EmptyRecipe extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context); // Get the current theme
+
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -161,15 +168,12 @@ class EmptyRecipe extends StatelessWidget {
           Image.asset('assets/recipebook.gif'),
           Text(
             'You haven\'t saved any recipes yet',
-            style: Theme.of(context)
-                .textTheme
-                .headlineMedium!
-                .copyWith(fontSize: 14.sp),
+            style: theme.textTheme.headlineMedium!.copyWith(fontSize: 14.sp),
           ),
           const SizedBox(height: 5.0),
           Text(
             'Want to take a look?',
-            style: Theme.of(context).textTheme.headlineSmall,
+            style: theme.textTheme.headlineSmall,
           ),
           SizedBox(height: 2.5.h),
           InkWell(
@@ -186,7 +190,7 @@ class EmptyRecipe extends StatelessWidget {
               height: 45.0,
               padding: const EdgeInsets.all(10.0),
               decoration: BoxDecoration(
-                color: Theme.of(context).primaryColor,
+                color: theme.primaryColor, // Apply theme primary color
                 boxShadow: [
                   BoxShadow(
                     color: Colors.black38.withOpacity(0.2),
@@ -199,9 +203,7 @@ class EmptyRecipe extends StatelessWidget {
               child: Center(
                 child: Text(
                   'Explore',
-                  style: Theme.of(context)
-                      .textTheme
-                      .headlineMedium!
+                  style: theme.textTheme.headlineMedium!
                       .copyWith(color: Colors.white, fontSize: 14.sp),
                 ),
               ),

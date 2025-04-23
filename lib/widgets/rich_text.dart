@@ -3,15 +3,14 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:sizer/sizer.dart';
 
 class HomeLogoText extends StatelessWidget {
-  const HomeLogoText({
-    Key? key,
-  }) : super(key: key);
+  const HomeLogoText({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    final textColor = Theme.of(context).textTheme.displayLarge?.color ?? Colors.black;
+
     return RichText(
       text: TextSpan(
-        style: DefaultTextStyle.of(context).style,
         children: <TextSpan>[
           TextSpan(
             text: 'Fairy',
@@ -19,7 +18,7 @@ class HomeLogoText extends StatelessWidget {
               fontSize: 22.0.sp,
               fontWeight: FontWeight.w600,
               letterSpacing: 1.0,
-              color: Colors.black87,
+              color: textColor, // ✅ uses theme's text color
             ),
           ),
           TextSpan(

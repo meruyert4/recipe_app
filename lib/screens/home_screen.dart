@@ -8,10 +8,11 @@ import 'package:unicons/unicons.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[100],
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
         child: FutureBuilder(
           future: Provider.of<RecipeProvider>(context, listen: false).loadRecipes(),
@@ -19,7 +20,12 @@ class HomeScreen extends StatelessWidget {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return const Center(child: CircularProgressIndicator());
             } else if (snapshot.hasError) {
-              return const Center(child: Text('Error loading recipes'));
+              return Center(
+                child: Text(
+                  'Error loading recipes',
+                  style: Theme.of(context).textTheme.bodyMedium,
+                ),
+              );
             } else {
               return Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16.0),
@@ -36,16 +42,10 @@ class HomeScreen extends StatelessWidget {
                       const SearchField(),
                       const SizedBox(height: 32.0),
                       Text(
-                        'Categories',
-                        style: Theme.of(context).textTheme.titleLarge!.copyWith(fontWeight: FontWeight.bold),
-                      ),
-                      const SizedBox(height: 12.0),
-                      const HomeGrid(),
-                      const SizedBox(height: 32.0),
-                      Text(
                         'Popular Recipes',
-                        style: Theme.of(context).textTheme.titleLarge!.copyWith(fontWeight: FontWeight.bold),
+                        style: Theme.of(context).textTheme.titleLarge,
                       ),
+
                       const SizedBox(height: 16.0),
                       const HomePopularGrid(),
                       const SizedBox(height: 20.0),
@@ -64,20 +64,14 @@ class HomeScreen extends StatelessWidget {
 class HomeHeaderRow extends StatelessWidget {
   const HomeHeaderRow({Key? key}) : super(key: key);
 
-  
-
   @override
   Widget build(BuildContext context) {
-    IconButton(
-  icon: const Icon(Icons.logout),
-  onPressed: () async {
-    await FirebaseAuth.instance.signOut();
-  },);
+    final userName = FirebaseAuth.instance.currentUser?.displayName ?? 'User';
     return Row(
       children: [
         Text(
-         'Good Morning, ${FirebaseAuth.instance.currentUser?.displayName ?? 'User'} 👋',
-          style: Theme.of(context).textTheme.titleMedium!.copyWith(fontWeight: FontWeight.w600),
+          'Good Morning, $userName 👋',
+          style: Theme.of(context).textTheme.titleMedium,
         ),
         const Spacer(),
         const ProfileImage(
@@ -86,9 +80,7 @@ class HomeHeaderRow extends StatelessWidget {
         ),
       ],
     );
-    
   }
-
 }
 
 class HomeGrid extends StatelessWidget {
@@ -98,6 +90,7 @@ class HomeGrid extends StatelessWidget {
   Widget build(BuildContext context) {
     final recipeProvider = Provider.of<RecipeProvider>(context);
     final recipes = recipeProvider.recipes;
+
     return SizedBox(
       height: 130.0,
       child: ListView.builder(
@@ -120,7 +113,7 @@ class HomeGrid extends StatelessWidget {
               margin: const EdgeInsets.only(right: 12.0),
               padding: const EdgeInsets.all(10.0),
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: Theme.of(context).cardColor,
                 borderRadius: BorderRadius.circular(16.0),
                 boxShadow: [
                   BoxShadow(
@@ -137,7 +130,8 @@ class HomeGrid extends StatelessWidget {
                     item.imageUrl,
                     height: 40.0,
                     width: 40.0,
-                    errorBuilder: (context, error, stackTrace) => const Icon(Icons.fastfood, size: 40),
+                    errorBuilder: (context, error, stackTrace) =>
+                        const Icon(Icons.fastfood, size: 40),
                   ),
                   const SizedBox(height: 8.0),
                   Text(
@@ -156,6 +150,7 @@ class HomeGrid extends StatelessWidget {
     );
   }
 }
+
 class HomePopularGrid extends StatelessWidget {
   const HomePopularGrid({Key? key}) : super(key: key);
 
@@ -171,10 +166,7 @@ class HomePopularGrid extends StatelessWidget {
         itemCount: popularRecipes.length,
         itemBuilder: (context, index) {
           final recipe = popularRecipes[index];
-          
-          // Check if image is a URL or local asset
-          bool isNetworkImage = recipe.imageName.startsWith('http');
-
+          final isNetworkImage = recipe.imageName.startsWith('http');
           return GestureDetector(
             onTap: () {
               Navigator.push(
@@ -189,8 +181,8 @@ class HomePopularGrid extends StatelessWidget {
               padding: const EdgeInsets.only(right: 20.0),
               child: HomeStack(
                 image: isNetworkImage
-                    ? recipe.imageName // Network image
-                    : 'assets/recipe_dataset/images/${recipe.imageName}.jpg', // Local asset image
+                    ? recipe.imageName
+                    : 'assets/recipe_dataset/images/${recipe.imageName}.jpg',
                 text: recipe.title,
                 prepTime: 30.0,
                 cookTime: 45.0,
@@ -222,6 +214,8 @@ class HomeStack extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final secondaryTextColor = Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.6);
+
     return Container(
       decoration: BoxDecoration(
         boxShadow: [
@@ -235,15 +229,12 @@ class HomeStack extends StatelessWidget {
       ),
       child: Stack(
         children: [
-          // Use BoxFit.cover for consistent image sizing
           Image.asset(
             image,
             height: 350.0,
             width: 200.0,
-            fit: BoxFit.cover, // Ensures the image fills the space while preserving its aspect ratio
-            errorBuilder: (context, error, stackTrace) {
-              return const Icon(Icons.fastfood, size: 40);
-            },
+            fit: BoxFit.cover,
+            errorBuilder: (context, error, stackTrace) => const Icon(Icons.fastfood, size: 40),
           ),
           Positioned(
             bottom: 10.0,
@@ -252,7 +243,7 @@ class HomeStack extends StatelessWidget {
               width: 180.0,
               height: 110.0,
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: Theme.of(context).cardColor,
                 boxShadow: [
                   BoxShadow(
                     color: Colors.black87.withOpacity(0.2),
@@ -281,10 +272,7 @@ class HomeStack extends StatelessWidget {
                         const SizedBox(width: 5.0),
                         Text(
                           '${(prepTime + cookTime).toStringAsFixed(0)} M Total',
-                          style: Theme.of(context)
-                              .textTheme
-                              .bodyMedium!
-                              .copyWith(color: Colors.black54),
+                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: secondaryTextColor),
                         ),
                       ],
                     ),
@@ -295,10 +283,7 @@ class HomeStack extends StatelessWidget {
                         const SizedBox(width: 5.0),
                         Text(
                           recipeReview.toStringAsFixed(1),
-                          style: Theme.of(context)
-                              .textTheme
-                              .bodyMedium!
-                              .copyWith(color: Colors.black54),
+                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: secondaryTextColor),
                         ),
                       ],
                     ),
@@ -306,7 +291,7 @@ class HomeStack extends StatelessWidget {
                 ),
               ),
             ),
-          )
+          ),
         ],
       ),
     );

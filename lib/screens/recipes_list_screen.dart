@@ -4,6 +4,7 @@ import 'package:recipe_app/provider/recipe_provider.dart';
 import 'package:recipe_app/screens/recipe_detail_screen.dart';
 import 'package:sizer/sizer.dart';
 import 'package:unicons/unicons.dart';
+import 'package:recipe_app/custom_theme.dart';
 
 class RecipesListScreen extends StatelessWidget {
   const RecipesListScreen({Key? key}) : super(key: key);
@@ -13,19 +14,27 @@ class RecipesListScreen extends StatelessWidget {
     final recipeProvider = Provider.of<RecipeProvider>(context);
     final allRecipes = recipeProvider.recipes;
 
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Recipes'),
+        backgroundColor: theme.appBarTheme.backgroundColor ?? (isDark ? Colors.black87 : Colors.white),
+        title: Text(
+          'Recipes',
+          style: theme.appBarTheme.titleTextStyle?.copyWith(
+            color: isDark ? Colors.white : Colors.black87, // Title text color
+          ),
+        ),
+        iconTheme: IconThemeData(
+          color: isDark ? Colors.white : Colors.black87, // Icon color
+        ),
       ),
       body: Padding(
         padding: const EdgeInsets.all(10.0),
         child: SingleChildScrollView(
           child: Column(
             children: [
-              const Text(
-                'All Recipes',
-                style: TextStyle(fontSize: 24),
-              ),
               ListView.builder(
                 shrinkWrap: true,
                 physics: const NeverScrollableScrollPhysics(),
@@ -47,7 +56,7 @@ class RecipesListScreen extends StatelessWidget {
                       child: SizedBox(
                         height: 20.0.h,
                         child: Material(
-                          color: Colors.white,
+                          color: theme.cardColor,
                           elevation: 2.0,
                           child: Row(
                             children: [
@@ -65,23 +74,23 @@ class RecipesListScreen extends StatelessWidget {
                                   children: [
                                     Text(
                                       recipe.title,
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .headlineMedium,
+                                      style: theme.textTheme.headlineMedium,
                                       overflow: TextOverflow.ellipsis,
                                       maxLines: 2,
                                     ),
                                     SizedBox(height: 1.5.h),
                                     Row(
                                       children: [
-                                        Icon(UniconsLine.clock,
-                                            size: 16.0,
-                                            color: Colors.grey.shade500),
+                                        Icon(
+                                          UniconsLine.clock,
+                                          size: 16.0,
+                                          color: theme.iconTheme.color,
+                                        ),
                                         SizedBox(width: 1.5.w),
-                                        Text('${recipe.cookTime}M Prep',
-                                            style: Theme.of(context)
-                                                .textTheme
-                                                .bodyMedium),
+                                        Text(
+                                          '${recipe.cookTime}M Prep',
+                                          style: theme.textTheme.bodyMedium,
+                                        ),
                                       ],
                                     ),
                                   ],
