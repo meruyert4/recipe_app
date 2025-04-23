@@ -9,20 +9,30 @@ class SettingsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final themeProvider = Provider.of<ThemeProvider>(context);
 
+    final isDark = themeProvider.isDarkMode; // Directly from theme provider
+    final theme = Theme.of(context);
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Settings'),
-        backgroundColor: Theme.of(context).primaryColor,
+        backgroundColor: theme.primaryColor,
       ),
       body: ListView(
         children: [
           SwitchListTile(
-            title: const Text('Dark Mode'),
+            title: Text(
+              isDark ? 'Dark Mode' : 'Light Mode', // Change the title based on theme
+              style: theme.textTheme.bodyLarge?.copyWith(
+                color: isDark ? Colors.white : Colors.black, // Adjust text color based on theme
+              ),
+            ),
             value: themeProvider.isDarkMode,
             onChanged: themeProvider.toggleTheme,
-            secondary: const Icon(Icons.dark_mode),
+            secondary: Icon(
+              isDark ? Icons.nightlight_round : Icons.wb_sunny, // Moon icon for dark mode, Sun for light mode
+              color: isDark ? Colors.white : Colors.black,
+            ),
           ),
-          // Add more settings here if needed
         ],
       ),
     );

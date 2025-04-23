@@ -33,8 +33,13 @@ migrate_working_dir/
 .pub/
 /build/
 
+ios
+linux
+macos 
+.env
+
 # large asset
-assets/recipe_dataset/
+assets/recipe_dataset/images
 
 # Symbolication related
 app.*.symbols

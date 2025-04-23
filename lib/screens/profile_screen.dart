@@ -13,6 +13,9 @@ class ProfileScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     User? user = FirebaseAuth.instance.currentUser;
 
+    // Get the current theme's scaffold background color
+    final isDarkMode = Theme.of(context).scaffoldBackgroundColor == const Color(0xFF121212);
+
     return Scaffold(
       body: Padding(
         padding: const EdgeInsets.only(left: 10.0, right: 10.0, top: 10.0),
@@ -21,9 +24,14 @@ class ProfileScreen extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               SizedBox(height: 6.0.h),
-              Text('Profile', style: Theme.of(context).textTheme.displayLarge),
+              Text(
+                'Profile',
+                style: Theme.of(context).textTheme.displayLarge?.copyWith(
+                      color: isDarkMode ? Colors.white : Colors.black87,
+                    ),
+              ),
               SizedBox(height: 4.0.h),
-              ProfileHeader(user: user),
+              ProfileHeader(user: user, isDarkMode: isDarkMode),
               const ProfileListView(),
             ],
           ),
@@ -35,8 +43,9 @@ class ProfileScreen extends StatelessWidget {
 
 class ProfileHeader extends StatefulWidget {
   final User? user;
+  final bool isDarkMode;
 
-  const ProfileHeader({Key? key, this.user}) : super(key: key);
+  const ProfileHeader({Key? key, this.user, required this.isDarkMode}) : super(key: key);
 
   @override
   State<ProfileHeader> createState() => _ProfileHeaderState();
@@ -63,12 +72,8 @@ class _ProfileHeaderState extends State<ProfileHeader> {
       final usernameSnapshot = await usernameRef.get();
 
       setState(() {
-        avatarUrl = avatarSnapshot.exists
-            ? avatarSnapshot.value as String?
-            : null;
-        username = usernameSnapshot.exists
-            ? usernameSnapshot.value as String
-            : widget.user?.displayName ?? 'User Name';
+        avatarUrl = avatarSnapshot.exists ? avatarSnapshot.value as String? : null;
+        username = usernameSnapshot.exists ? usernameSnapshot.value as String : widget.user?.displayName ?? 'User Name';
         isLoading = false;
       });
     }
@@ -97,11 +102,19 @@ class _ProfileHeaderState extends State<ProfileHeader> {
             ),
           ),
           const SizedBox(height: 10.0),
-          Text(username ?? 'User Name',
-              style: Theme.of(context).textTheme.headlineMedium),
+          Text(
+            username ?? 'User Name',
+            style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                  color: widget.isDarkMode ? Colors.white : Colors.black,
+                ),
+          ),
           const SizedBox(height: 5.0),
-          Text(widget.user?.email ?? 'Email not available',
-              style: Theme.of(context).textTheme.headlineSmall),
+          Text(
+            widget.user?.email ?? 'Email not available',
+            style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                  color: widget.isDarkMode ? Colors.white70 : Colors.black87,
+                ),
+          ),
         ],
       ),
     );
@@ -122,8 +135,16 @@ class ProfileListTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Get the current theme's scaffold background color
+    final isDarkMode = Theme.of(context).scaffoldBackgroundColor == const Color(0xFF121212);
+
     return ListTile(
-      title: Text(text, style: Theme.of(context).textTheme.headlineSmall),
+      title: Text(
+        text,
+        style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+              color: isDarkMode ? Colors.white : Colors.black87,
+            ),
+      ),
       horizontalTitleGap: 5.0,
       leading: Padding(
         padding: const EdgeInsets.all(10.0),
@@ -141,6 +162,9 @@ class ProfileListView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Get the current theme's scaffold background color
+    final isDarkMode = Theme.of(context).scaffoldBackgroundColor == const Color(0xFF121212);
+
     return SizedBox(
       height: MediaQuery.of(context).size.height * 0.55,
       child: ListView(
@@ -153,8 +177,8 @@ class ProfileListView extends StatelessWidget {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                    builder: (context) =>
-                        EditProfileScreen(user: FirebaseAuth.instance.currentUser)),
+                    builder: (context) => EditProfileScreen(
+                        user: FirebaseAuth.instance.currentUser)),
               );
             },
           ),
@@ -165,8 +189,7 @@ class ProfileListView extends StatelessWidget {
             onTapAction: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(
-                    builder: (context) => const SettingsScreen()), 
+                MaterialPageRoute(builder: (context) => const SettingsScreen()),
               );
             },
           ),
