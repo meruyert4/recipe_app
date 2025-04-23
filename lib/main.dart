@@ -35,7 +35,7 @@ class MyApp extends StatelessWidget {
     return Sizer(
       builder: (context, orientation, deviceType) {
         return MaterialApp(
-          title: 'Recipe App',
+          title: 'FairyFridge',
           debugShowCheckedModeBanner: false,
           theme: CustomTheme.lightTheme,
           home: const AuthGate(),

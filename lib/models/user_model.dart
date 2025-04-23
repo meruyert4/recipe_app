@@ -8,4 +8,12 @@ class UserModel {
   factory UserModel.fromFirebaseUser(String uid, String email, {String? name}) {
     return UserModel(uid: uid, email: email, name: name);
   }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'uid': uid,
+      'email': email,
+      'name': name,
+    };
+  }
 }

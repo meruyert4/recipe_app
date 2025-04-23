@@ -1,15 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:sizer/sizer.dart';
 import 'package:unicons/unicons.dart';
-import 'package:recipe_app/widgets/widgets.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:recipe_app/screens/edit_profile_screen.dart';
+import 'package:image_picker/image_picker.dart';
+import 'dart:convert';
+import 'package:firebase_database/firebase_database.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    // Get the current user
     User? user = FirebaseAuth.instance.currentUser;
 
     return Scaffold(
@@ -22,11 +24,8 @@ class ProfileScreen extends StatelessWidget {
               SizedBox(height: 6.0.h),
               Text('Profile', style: Theme.of(context).textTheme.displayLarge),
               SizedBox(height: 4.0.h),
-              // ProfileHeader with dynamic user data
               ProfileHeader(
-                imageUrl: user?.photoURL,
-                userName: user?.displayName ?? 'User Name',
-                userEmail: user?.email ?? 'Email not available',
+                user: user,
               ),
               const ProfileListView(),
             ],
@@ -37,38 +36,104 @@ class ProfileScreen extends StatelessWidget {
   }
 }
 
+class ProfileHeader extends StatefulWidget {
+  final User? user;
 
-class ProfileHeader extends StatelessWidget {
-  final String? imageUrl;
-  final String userName;
-  final String userEmail;
+  const ProfileHeader({Key? key, this.user}) : super(key: key);
 
-  const ProfileHeader({
-    Key? key,
-    this.imageUrl,
-    required this.userName,
-    required this.userEmail,
-  }) : super(key: key);
+  @override
+  State<ProfileHeader> createState() => _ProfileHeaderState();
+}
+
+class _ProfileHeaderState extends State<ProfileHeader> {
+  String? base64Image;
+  final picker = ImagePicker();
+  bool isLoading = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadProfileImage();
+  }
+
+  Future<void> _loadProfileImage() async {
+    final userId = widget.user?.uid;
+    if (userId != null) {
+      DatabaseReference ref = FirebaseDatabase.instance.ref('users/$userId/avatar');
+      final snapshot = await ref.get();
+      if (snapshot.exists) {
+        setState(() {
+          base64Image = snapshot.value as String?;
+        });
+      }
+    }
+  }
+
+  Future<void> _pickAndUploadImage() async {
+    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+    if (pickedFile != null) {
+      setState(() => isLoading = true);
+      final bytes = await pickedFile.readAsBytes();
+      final encoded = base64Encode(bytes);
+
+      final userId = widget.user?.uid;
+      if (userId != null) {
+        DatabaseReference ref = FirebaseDatabase.instance.ref('users/$userId/avatar');
+        await ref.set(encoded);
+        setState(() {
+          base64Image = encoded;
+        });
+      }
+      setState(() => isLoading = false);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        ProfileImage(
-          height: 20.0.h,
-          image: imageUrl ?? 'https://www.example.com/default-image.jpg',
-        ),
-        const SizedBox(height: 10.0),
-        Text(userName, style: Theme.of(context).textTheme.headlineMedium),
-        const SizedBox(height: 5.0),
-        Text(userEmail, style: Theme.of(context).textTheme.headlineSmall),
-      ],
+    final imageWidget = base64Image != null
+        ? Image.memory(base64Decode(base64Image!), fit: BoxFit.cover)
+        : Image.network(
+            'https://plus.unsplash.com/premium_photo-1682023585957-f191203ab239?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NXx8ZGVmYXVsdCUyMGF2YXRhcnxlbnwwfHwwfHx8MA%3D%3D',
+            fit: BoxFit.cover,
+          );
+
+    return Center(  // Wrap the column in a Center widget to center the contents
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,  // Align the contents centrally
+        children: [
+          GestureDetector(
+            onTap: _pickAndUploadImage,
+            child: Stack(
+              alignment: Alignment.center,
+              children: [
+                ClipOval(
+                  child: SizedBox(
+                    height: 20.0.h,
+                    width: 20.0.h,
+                    child: isLoading
+                        ? const Center(child: CircularProgressIndicator())
+                        : imageWidget,
+                  ),
+                ),
+                Positioned(
+                  bottom: 10,
+                  right: 10,
+                  child: Icon(Icons.camera_alt, size: 20.sp, color: Colors.white),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 10.0),
+          Text(widget.user?.displayName ?? 'User Name',
+              style: Theme.of(context).textTheme.headlineMedium),
+          const SizedBox(height: 5.0),
+          Text(widget.user?.email ?? 'Email not available',
+              style: Theme.of(context).textTheme.headlineSmall),
+        ],
+      ),
     );
   }
 }
-
 
 class ProfileListTile extends StatelessWidget {
   final String text;
@@ -96,16 +161,13 @@ class ProfileListTile extends StatelessWidget {
         size: 24.0.sp,
         color: Theme.of(context).iconTheme.color,
       ),
-      onTap: onTapAction ?? () {}, // Use no-op function if onTapAction is null
+      onTap: onTapAction ?? () {},
     );
   }
 }
 
-
 class ProfileListView extends StatelessWidget {
-  const ProfileListView({
-    Key? key,
-  }) : super(key: key);
+  const ProfileListView({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -114,22 +176,25 @@ class ProfileListView extends StatelessWidget {
       child: ListView(
         padding: const EdgeInsets.symmetric(vertical: 20.0),
         children: [
-          const ProfileListTile(
+          ProfileListTile(
             text: 'Account',
             icon: UniconsLine.user_circle,
-            onTapAction: null, // This will do nothing when tapped
+            onTapAction: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => EditProfileScreen(user: FirebaseAuth.instance.currentUser)),
+              );
+            },
           ),
           Divider(color: Colors.grey.shade400, indent: 10.0, endIndent: 10.0),
           const ProfileListTile(
             text: 'Settings',
             icon: UniconsLine.setting,
-            onTapAction: null, // This will do nothing when tapped
           ),
           Divider(color: Colors.grey.shade400, indent: 10.0, endIndent: 10.0),
           const ProfileListTile(
             text: 'App Info',
             icon: UniconsLine.info_circle,
-            onTapAction: null, // This will do nothing when tapped
           ),
           Divider(color: Colors.grey.shade400, indent: 10.0, endIndent: 10.0),
           ProfileListTile(
@@ -137,7 +202,7 @@ class ProfileListView extends StatelessWidget {
             icon: UniconsLine.sign_out_alt,
             onTapAction: () async {
               await FirebaseAuth.instance.signOut();
-              // Navigate to the login screen or wherever appropriate
+              // Navigate to login screen here if needed
             },
           ),
         ],

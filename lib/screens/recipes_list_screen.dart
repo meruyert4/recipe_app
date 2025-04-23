@@ -78,7 +78,7 @@ class RecipesListScreen extends StatelessWidget {
                                             size: 16.0,
                                             color: Colors.grey.shade500),
                                         SizedBox(width: 1.5.w),
-                                        Text('30M Prep',
+                                        Text('${recipe.cookTime}M Prep',
                                             style: Theme.of(context)
                                                 .textTheme
                                                 .bodyMedium),

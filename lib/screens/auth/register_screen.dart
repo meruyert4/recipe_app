@@ -1,5 +1,7 @@
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:recipe_app/models/user_model.dart';
 import 'package:recipe_app/screens/auth/login_screen.dart';
 
 class RegisterScreen extends StatefulWidget {
@@ -17,34 +19,51 @@ class _RegisterScreenState extends State<RegisterScreen> {
   String? error;
 
   Future<void> register() async {
-    setState(() {
-      isLoading = true;
-      error = null;
-    });
+  setState(() {
+    isLoading = true;
+    error = null;
+  });
 
-    try {
-      UserCredential userCredential = await FirebaseAuth.instance
-          .createUserWithEmailAndPassword(
-        email: emailController.text.trim(),
-        password: passwordController.text,
+  try {
+    UserCredential userCredential = await FirebaseAuth.instance
+        .createUserWithEmailAndPassword(
+      email: emailController.text.trim(),
+      password: passwordController.text,
+    );
+
+    final user = userCredential.user;
+
+    if (user != null) {
+      final name = nameController.text.trim();
+      await user.updateDisplayName(name);
+
+      // Create user model
+      final newUser = UserModel(
+        uid: user.uid,
+        email: user.email!,
+        name: name,
       );
 
-      await userCredential.user?.updateDisplayName(nameController.text.trim());
-
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (_) => const LoginScreen()),
-      );
-    } on FirebaseAuthException catch (e) {
-      setState(() {
-        error = e.message;
-      });
+      // Save user data to Realtime Database
+      final userRef =
+          FirebaseDatabase.instance.ref().child('users/${user.uid}');
+      await userRef.set(newUser.toJson());
     }
 
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (_) => const LoginScreen()),
+    );
+  } on FirebaseAuthException catch (e) {
     setState(() {
-      isLoading = false;
+      error = e.message;
     });
   }
+
+  setState(() {
+    isLoading = false;
+  });
+}
 
   @override
   Widget build(BuildContext context) {

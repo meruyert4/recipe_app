@@ -27,6 +27,20 @@ class RecipeDetailScreen extends StatelessWidget {
               fit: BoxFit.cover,
             ),
             Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: Row(
+                children: [
+                  const Icon(Icons.timer, size: 20, color: Colors.grey),
+                  const SizedBox(width: 8),
+                  Text(
+                    '${recipe.cookTime} M Prep',
+                    style: Theme.of(context).textTheme.bodyMedium,
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 16),
+            Padding(
               padding: const EdgeInsets.all(16.0),
               child: Text(
                 recipe.title,

@@ -120,18 +120,17 @@ class _SavedRecipesState extends State<SavedRecipes> {
                                   maxLines: 2,
                                   overflow: TextOverflow.ellipsis,
                                 ),
-                                // You can uncomment time details if needed
-                                // SizedBox(height: 1.5.h),
-                                // Row(
-                                //   children: [
-                                //     Icon(UniconsLine.clock, size: 16.0, color: Colors.grey.shade500),
-                                //     SizedBox(width: 1.5.w),
-                                //     Text(
-                                //       '${recipe.prepTime.toStringAsFixed(0)} M Prep',
-                                //       style: Theme.of(context).textTheme.bodyMedium,
-                                //     ),
-                                //   ],
-                                // ),
+                                SizedBox(height: 1.5.h),
+                                Row(
+                                  children: [
+                                    Icon(UniconsLine.clock, size: 16.0, color: Colors.grey.shade500),
+                                    SizedBox(width: 1.5.w),
+                                    Text(
+                                      '${recipe.cookTime.toStringAsFixed(0)} M Prep',
+                                      style: Theme.of(context).textTheme.bodyMedium,
+                                    ),
+                                  ],
+                                ),
                               ],
                             ),
                           ),
