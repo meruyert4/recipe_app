@@ -271,7 +271,7 @@ class HomeStack extends StatelessWidget {
                         const Icon(UniconsLine.clock, size: 16),
                         const SizedBox(width: 5.0),
                         Text(
-                          '${(prepTime + cookTime).toStringAsFixed(0)} M Total',
+                          '${cookTime.toStringAsFixed(0)} M Total',
                           style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: secondaryTextColor),
                         ),
                       ],
