@@ -3,6 +3,8 @@ import 'package:provider/provider.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:sizer/sizer.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import 'package:recipe_app/provider/provider.dart';
 import 'package:recipe_app/provider/theme_provider.dart';
@@ -44,6 +46,18 @@ class MyApp extends StatelessWidget {
           themeMode: themeProvider.themeMode, // <- dynamic mode
           theme: CustomTheme.lightTheme,
           darkTheme: CustomTheme.darkTheme,
+          locale: Locale('ru'),
+          localizationsDelegates: [
+            AppLocalizations.delegate,
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+          supportedLocales: [
+            Locale('en'), // English
+            Locale('ru'), // Russian
+          ],
+
           home: const AuthGate(),
         );
       },

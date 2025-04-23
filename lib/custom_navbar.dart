@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:recipe_app/screens/screens.dart';
 import 'package:sizer/sizer.dart';
 import 'package:unicons/unicons.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class CustomNavBar extends StatefulWidget {
   const CustomNavBar({Key? key}) : super(key: key);
@@ -33,6 +34,7 @@ class _CustomNavBarState extends State<CustomNavBar>
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
+    final localizations = AppLocalizations.of(context)!;
 
     return Scaffold(
       bottomNavigationBar: BottomNavigationBar(
@@ -47,30 +49,30 @@ class _CustomNavBarState extends State<CustomNavBar>
         selectedItemColor: theme.primaryColor,
         unselectedItemColor: theme.unselectedWidgetColor ?? (isDark ? Colors.grey[600] : Colors.grey),
         type: BottomNavigationBarType.fixed,
-        items: const <BottomNavigationBarItem>[
+        items: <BottomNavigationBarItem>[
           BottomNavigationBarItem(
-            icon: Icon(UniconsLine.home),
-            label: 'Home',
+            icon: const Icon(UniconsLine.home),
+            label: localizations.home,
           ),
           BottomNavigationBarItem(
             icon: Icon(UniconsLine.restaurant),
-            label: 'Recipes',
+            label: localizations.recipes,
           ),
           BottomNavigationBarItem(
-            icon: Icon(UniconsLine.bookmark),
-            label: 'Saved',
+            icon: const Icon(UniconsLine.bookmark),
+            label: localizations.saved,
           ),
           BottomNavigationBarItem(
-            icon: Icon(UniconsLine.comments),
-            label: "Forum",
+            icon: const Icon(UniconsLine.comments),
+            label: localizations.forum,
           ),
           BottomNavigationBarItem(
-            icon: Icon(UniconsLine.utensils),
-            label: "Fridge",
+            icon: const Icon(UniconsLine.utensils),
+            label: localizations.fridge,
           ),
           BottomNavigationBarItem(
-            icon: Icon(UniconsLine.user),
-            label: 'Profile',
+            icon: const Icon(UniconsLine.user),
+            label: localizations.profile,
           ),
         ],
       ),
