@@ -2,10 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:sizer/sizer.dart';
 import 'package:unicons/unicons.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:recipe_app/screens/edit_profile_screen.dart';
-import 'package:image_picker/image_picker.dart';
-import 'dart:convert';
 import 'package:firebase_database/firebase_database.dart';
+import 'edit_profile_screen.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({Key? key}) : super(key: key);
@@ -24,9 +22,7 @@ class ProfileScreen extends StatelessWidget {
               SizedBox(height: 6.0.h),
               Text('Profile', style: Theme.of(context).textTheme.displayLarge),
               SizedBox(height: 4.0.h),
-              ProfileHeader(
-                user: user,
-              ),
+              ProfileHeader(user: user),
               const ProfileListView(),
             ],
           ),
@@ -46,85 +42,61 @@ class ProfileHeader extends StatefulWidget {
 }
 
 class _ProfileHeaderState extends State<ProfileHeader> {
-  String? base64Image;
-  final picker = ImagePicker();
-  bool isLoading = false;
+  String? avatarUrl;
+  String? username;
+  bool isLoading = true;
 
   @override
   void initState() {
     super.initState();
-    _loadProfileImage();
+    _loadProfileData();
   }
 
-  Future<void> _loadProfileImage() async {
+  Future<void> _loadProfileData() async {
     final userId = widget.user?.uid;
     if (userId != null) {
-      DatabaseReference ref = FirebaseDatabase.instance.ref('users/$userId/avatar');
-      final snapshot = await ref.get();
-      if (snapshot.exists) {
-        setState(() {
-          base64Image = snapshot.value as String?;
-        });
-      }
-    }
-  }
+      final avatarRef = FirebaseDatabase.instance.ref('users/$userId/avatar');
+      final usernameRef = FirebaseDatabase.instance.ref('users/$userId/username');
 
-  Future<void> _pickAndUploadImage() async {
-    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
-    if (pickedFile != null) {
-      setState(() => isLoading = true);
-      final bytes = await pickedFile.readAsBytes();
-      final encoded = base64Encode(bytes);
+      final avatarSnapshot = await avatarRef.get();
+      final usernameSnapshot = await usernameRef.get();
 
-      final userId = widget.user?.uid;
-      if (userId != null) {
-        DatabaseReference ref = FirebaseDatabase.instance.ref('users/$userId/avatar');
-        await ref.set(encoded);
-        setState(() {
-          base64Image = encoded;
-        });
-      }
-      setState(() => isLoading = false);
+      setState(() {
+        avatarUrl = avatarSnapshot.exists
+            ? avatarSnapshot.value as String?
+            : null;
+        username = usernameSnapshot.exists
+            ? usernameSnapshot.value as String
+            : widget.user?.displayName ?? 'User Name';
+        isLoading = false;
+      });
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final imageWidget = base64Image != null
-        ? Image.memory(base64Decode(base64Image!), fit: BoxFit.cover)
+    final imageWidget = avatarUrl != null && avatarUrl!.isNotEmpty
+        ? Image.network(avatarUrl!, fit: BoxFit.cover)
         : Image.network(
-            'https://plus.unsplash.com/premium_photo-1682023585957-f191203ab239?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NXx8ZGVmYXVsdCUyMGF2YXRhcnxlbnwwfHwwfHx8MA%3D%3D',
+            'https://i.pinimg.com/474x/34/95/ee/3495ee40657be72a6e7ef766a1ddc303.jpg',
             fit: BoxFit.cover,
           );
 
-    return Center(  // Wrap the column in a Center widget to center the contents
+    return Center(
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,  // Align the contents centrally
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          GestureDetector(
-            onTap: _pickAndUploadImage,
-            child: Stack(
-              alignment: Alignment.center,
-              children: [
-                ClipOval(
-                  child: SizedBox(
-                    height: 20.0.h,
-                    width: 20.0.h,
-                    child: isLoading
-                        ? const Center(child: CircularProgressIndicator())
-                        : imageWidget,
-                  ),
-                ),
-                Positioned(
-                  bottom: 10,
-                  right: 10,
-                  child: Icon(Icons.camera_alt, size: 20.sp, color: Colors.white),
-                ),
-              ],
+          ClipOval(
+            child: SizedBox(
+              height: 20.0.h,
+              width: 20.0.h,
+              child: isLoading
+                  ? const Center(child: CircularProgressIndicator())
+                  : imageWidget,
             ),
           ),
           const SizedBox(height: 10.0),
-          Text(widget.user?.displayName ?? 'User Name',
+          Text(username ?? 'User Name',
               style: Theme.of(context).textTheme.headlineMedium),
           const SizedBox(height: 5.0),
           Text(widget.user?.email ?? 'Email not available',
@@ -156,11 +128,8 @@ class ProfileListTile extends StatelessWidget {
         padding: const EdgeInsets.all(10.0),
         child: Icon(icon, color: Theme.of(context).iconTheme.color),
       ),
-      trailing: Icon(
-        UniconsLine.angle_right,
-        size: 24.0.sp,
-        color: Theme.of(context).iconTheme.color,
-      ),
+      trailing: Icon(UniconsLine.angle_right,
+          size: 24.0.sp, color: Theme.of(context).iconTheme.color),
       onTap: onTapAction ?? () {},
     );
   }
@@ -182,27 +151,22 @@ class ProfileListView extends StatelessWidget {
             onTapAction: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => EditProfileScreen(user: FirebaseAuth.instance.currentUser)),
+                MaterialPageRoute(
+                    builder: (context) =>
+                        EditProfileScreen(user: FirebaseAuth.instance.currentUser)),
               );
             },
           ),
           Divider(color: Colors.grey.shade400, indent: 10.0, endIndent: 10.0),
-          const ProfileListTile(
-            text: 'Settings',
-            icon: UniconsLine.setting,
-          ),
+          const ProfileListTile(text: 'Settings', icon: UniconsLine.setting),
           Divider(color: Colors.grey.shade400, indent: 10.0, endIndent: 10.0),
-          const ProfileListTile(
-            text: 'App Info',
-            icon: UniconsLine.info_circle,
-          ),
+          const ProfileListTile(text: 'App Info', icon: UniconsLine.info_circle),
           Divider(color: Colors.grey.shade400, indent: 10.0, endIndent: 10.0),
           ProfileListTile(
             text: 'Logout',
             icon: UniconsLine.sign_out_alt,
             onTapAction: () async {
               await FirebaseAuth.instance.signOut();
-              // Navigate to login screen here if needed
             },
           ),
         ],
