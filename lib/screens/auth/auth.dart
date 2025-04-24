@@ -12,7 +12,7 @@ class AuthService {
 
       // Save initial profile image URL if needed (or keep it empty)
       if (user != null) {
-        await _database.child('users').child(user.uid).set({
+        await _database.ref().child('users').child(user.uid).set({
           'email': email,
           'profileImage': '', // empty initially
         });

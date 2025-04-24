@@ -196,9 +196,15 @@ class ProfileListView extends StatelessWidget {
           ),
           Divider(color: Colors.grey.shade400, indent: 10.0, endIndent: 10.0),
           ProfileListTile(
-            text: AppLocalizations.of(context)!.about, 
-            icon: UniconsLine.info_circle
-            ),
+            text: AppLocalizations.of(context)!.about,
+            icon: UniconsLine.info_circle,
+            onTapAction: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const AppInfoScreen()),
+              );
+            },
+          ),
           Divider(color: Colors.grey.shade400, indent: 10.0, endIndent: 10.0),
           ProfileListTile(
             text: AppLocalizations.of(context)!.logout,
