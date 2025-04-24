@@ -7,3 +7,4 @@ export 'profile_screen.dart';
 export 'forum_screen.dart';
 export 'fridge_screen.dart';
 export 'settings_screen.dart';
+export 'app_info_screen.dart';

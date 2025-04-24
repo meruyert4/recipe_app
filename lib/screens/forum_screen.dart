@@ -107,7 +107,7 @@ class ForumScreen extends StatelessWidget {
                             label: Text(
                               tag,
                               style: TextStyle(
-                                color: isDark ? Colors.black : Colors.white, // Adjust text color
+                                color: isDark ? Colors.black : Colors.white,
                               ),
                             ),
                             backgroundColor: isDark ? Colors.green.shade700 : Colors.green.shade50, // Adjust chip color
