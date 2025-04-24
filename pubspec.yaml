@@ -26,6 +26,9 @@ dependencies:
   firebase_core: ^3.13.0
   firebase_auth: ^5.5.2
   firebase_database: ^11.3.5
+  flutter_localizations:
+    sdk: flutter
+  intl: any
 
 dev_dependencies:
   flutter_test:
@@ -34,6 +37,7 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+  generate: true
 
   assets:
     - assets/recipebook.gif

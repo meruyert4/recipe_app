@@ -6,6 +6,7 @@ import 'package:sizer/sizer.dart';
 import 'package:unicons/unicons.dart';
 import 'package:recipe_app/custom_navbar.dart';
 import 'package:recipe_app/screens/recipe_detail_screen.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class SavedScreen extends StatelessWidget {
   const SavedScreen({Key? key}) : super(key: key);
@@ -48,7 +49,7 @@ class _SavedRecipesState extends State<SavedRecipes> {
       children: [
         SizedBox(height: 6.0.h),
         Text(
-          'Saved',
+          AppLocalizations.of(context)!.saved,
           style: theme.textTheme.displayLarge, // Apply theme
         ),
         SizedBox(height: 4.0.h),
@@ -79,7 +80,11 @@ class _SavedRecipesState extends State<SavedRecipes> {
                   savedProvider.removeRecipe(recipe.title);
                 });
                 ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text('${recipe.title} deleted')),
+                  SnackBar(
+                    content: Text(
+                      AppLocalizations.of(context)!.recipeDeleted(recipe.title),
+                    ),
+                  ),
                 );
               },
               child: InkWell(
@@ -167,12 +172,12 @@ class EmptyRecipe extends StatelessWidget {
           SizedBox(height: 10.h),
           Image.asset('assets/recipebook.gif'),
           Text(
-            'You haven\'t saved any recipes yet',
+            AppLocalizations.of(context)!.noSavedRecipes,
             style: theme.textTheme.headlineMedium!.copyWith(fontSize: 14.sp),
           ),
           const SizedBox(height: 5.0),
           Text(
-            'Want to take a look?',
+            AppLocalizations.of(context)!.wantToTakeALook,
             style: theme.textTheme.headlineSmall,
           ),
           SizedBox(height: 2.5.h),
@@ -202,7 +207,7 @@ class EmptyRecipe extends StatelessWidget {
               ),
               child: Center(
                 child: Text(
-                  'Explore',
+                  AppLocalizations.of(context)!.explore,
                   style: theme.textTheme.headlineMedium!
                       .copyWith(color: Colors.white, fontSize: 14.sp),
                 ),

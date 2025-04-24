@@ -4,6 +4,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/services.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class OpenFridgeScreen extends StatefulWidget {
   const OpenFridgeScreen({Key? key}) : super(key: key);
@@ -74,7 +75,7 @@ class _OpenFridgeScreenState extends State<OpenFridgeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Open Fridge'),
+        title: Text(AppLocalizations.of(context)!.openFridge),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -86,22 +87,22 @@ class _OpenFridgeScreenState extends State<OpenFridgeScreen> {
               children: [
                 ElevatedButton(
                   onPressed: () => _getImage(ImageSource.camera),
-                  child: Text('Take a photo of your fridge'),
+                  child: Text(AppLocalizations.of(context)!.takePhoto),
                 ),
                 SizedBox(height: 20),
                 ElevatedButton(
                   onPressed: () => _getImage(ImageSource.gallery),
-                  child: Text('Choose a photo from gallery'),
+                  child: Text(AppLocalizations.of(context)!.chooseFromGallery),
                 ),
                 SizedBox(height: 20),
                 _image == null
-                    ? Text('No image selected.')
+                    ? Text(AppLocalizations.of(context)!.noImageSelected)
                     : Image.file(_image!),
                 SizedBox(height: 20),
                 _ingredients.isEmpty
-                    ? Text('Wait for AI to analyze the fridge.')
+                    ? Text(AppLocalizations.of(context)!.noIngredientsFound)
                     : Text(
-                        'Ingredients found: \n$_ingredients',
+                        '${AppLocalizations.of(context)!.ingredientsFound} \n$_ingredients',
                         textAlign: TextAlign.center,
                       ),
               ],

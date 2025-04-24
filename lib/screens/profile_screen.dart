@@ -5,6 +5,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'edit_profile_screen.dart';
 import 'package:recipe_app/screens/screens.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({Key? key}) : super(key: key);
@@ -25,7 +26,7 @@ class ProfileScreen extends StatelessWidget {
             children: [
               SizedBox(height: 6.0.h),
               Text(
-                'Profile',
+                AppLocalizations.of(context)!.profile,
                 style: Theme.of(context).textTheme.displayLarge?.copyWith(
                       color: isDarkMode ? Colors.white : Colors.black87,
                     ),
@@ -103,14 +104,14 @@ class _ProfileHeaderState extends State<ProfileHeader> {
           ),
           const SizedBox(height: 10.0),
           Text(
-            username ?? 'User Name',
+            username ?? AppLocalizations.of(context)!.userName,
             style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                   color: widget.isDarkMode ? Colors.white : Colors.black,
                 ),
           ),
           const SizedBox(height: 5.0),
           Text(
-            widget.user?.email ?? 'Email not available',
+            widget.user?.email ?? AppLocalizations.of(context)!.email,
             style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                   color: widget.isDarkMode ? Colors.white70 : Colors.black87,
                 ),
@@ -171,7 +172,7 @@ class ProfileListView extends StatelessWidget {
         padding: const EdgeInsets.symmetric(vertical: 20.0),
         children: [
           ProfileListTile(
-            text: 'Account',
+            text: AppLocalizations.of(context)!.account,
             icon: UniconsLine.user_circle,
             onTapAction: () {
               Navigator.push(
@@ -184,7 +185,7 @@ class ProfileListView extends StatelessWidget {
           ),
           Divider(color: Colors.grey.shade400, indent: 10.0, endIndent: 10.0),
           ProfileListTile(
-            text: 'Settings',
+            text: AppLocalizations.of(context)!.settings,
             icon: UniconsLine.setting,
             onTapAction: () {
               Navigator.push(
@@ -195,7 +196,7 @@ class ProfileListView extends StatelessWidget {
           ),
           Divider(color: Colors.grey.shade400, indent: 10.0, endIndent: 10.0),
           ProfileListTile(
-            text: 'App Info',
+            text: AppLocalizations.of(context)!.about,
             icon: UniconsLine.info_circle,
             onTapAction: () {
               Navigator.push(
@@ -206,7 +207,7 @@ class ProfileListView extends StatelessWidget {
           ),
           Divider(color: Colors.grey.shade400, indent: 10.0, endIndent: 10.0),
           ProfileListTile(
-            text: 'Logout',
+            text: AppLocalizations.of(context)!.logout,
             icon: UniconsLine.sign_out_alt,
             onTapAction: () async {
               await FirebaseAuth.instance.signOut();

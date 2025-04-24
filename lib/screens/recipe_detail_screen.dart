@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:recipe_app/models/recipe.dart';
 import 'package:recipe_app/provider/saved_provider.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class RecipeDetailScreen extends StatelessWidget {
   const RecipeDetailScreen({Key? key}) : super(key: key);
@@ -34,7 +35,9 @@ class RecipeDetailScreen extends StatelessWidget {
                   const Icon(Icons.timer, size: 20, color: Colors.grey),
                   const SizedBox(width: 8),
                   Text(
-                    '${recipe.cookTime} M Prep',
+                    AppLocalizations.of(context)!.prepTime(
+                      recipe.cookTime.toStringAsFixed(0),
+                    ),
                     style: Theme.of(context).textTheme.bodyMedium,
                   ),
                 ],
@@ -53,7 +56,7 @@ class RecipeDetailScreen extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16.0),
               child: Text(
-                'Ingredients',
+                AppLocalizations.of(context)!.ingredients,
                 style: Theme.of(context).textTheme.titleMedium?.copyWith(
                   color: Colors.green[800],
                   fontWeight: FontWeight.w600,
@@ -86,7 +89,7 @@ class RecipeDetailScreen extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16.0),
               child: Text(
-                'Instructions',
+                AppLocalizations.of(context)!.instructions,
                 style: Theme.of(context).textTheme.titleMedium?.copyWith(
                   color: Colors.orange[800],
                   fontWeight: FontWeight.w600,
@@ -109,7 +112,9 @@ class RecipeDetailScreen extends StatelessWidget {
                       .addAndRemoveFromSaved(recipe);
                 },
                 child: Text(
-                  isSaved ? 'Remove from Saved' : 'Save Recipe',
+                  isSaved 
+                    ? AppLocalizations.of(context)!.removeFromSaved
+                    : AppLocalizations.of(context)!.saveRecipe,
                 ),
               ),
             ),

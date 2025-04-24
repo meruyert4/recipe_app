@@ -3,9 +3,12 @@ import 'package:provider/provider.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:sizer/sizer.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import 'package:recipe_app/provider/provider.dart';
 import 'package:recipe_app/provider/theme_provider.dart';
+import 'package:recipe_app/provider/locale_provider.dart';
 import 'package:recipe_app/firebase_options.dart';
 import 'package:recipe_app/screens/auth/login_screen.dart';
 import 'package:recipe_app/custom_navbar.dart';
@@ -22,7 +25,8 @@ void main() async {
       providers: [
         ChangeNotifierProvider(create: (_) => RecipeProvider()..loadRecipes()),
         ChangeNotifierProvider(create: (_) => SavedProvider()),
-        ChangeNotifierProvider(create: (_) => ThemeProvider()), // <- here
+        ChangeNotifierProvider(create: (_) => ThemeProvider()),
+        ChangeNotifierProvider(create: (_) => LocaleProvider()),
       ],
       child: const MyApp(),
     ),
@@ -35,6 +39,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final themeProvider = Provider.of<ThemeProvider>(context);
+    final localeProvider = Provider.of<LocaleProvider>(context);
 
     return Sizer(
       builder: (context, orientation, deviceType) {
@@ -44,6 +49,9 @@ class MyApp extends StatelessWidget {
           themeMode: themeProvider.themeMode, // <- dynamic mode
           theme: CustomTheme.lightTheme,
           darkTheme: CustomTheme.darkTheme,
+          locale: localeProvider.locale,
+          supportedLocales: AppLocalizations.supportedLocales,
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
           home: const AuthGate(),
         );
       },
