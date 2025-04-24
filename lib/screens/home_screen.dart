@@ -5,6 +5,7 @@ import 'package:recipe_app/provider/provider.dart';
 import 'package:recipe_app/screens/recipe_detail_screen.dart';
 import 'package:recipe_app/widgets/widgets.dart';
 import 'package:unicons/unicons.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -22,7 +23,7 @@ class HomeScreen extends StatelessWidget {
             } else if (snapshot.hasError) {
               return Center(
                 child: Text(
-                  'Error loading recipes',
+                  AppLocalizations.of(context)!.errorLoadingData,
                   style: Theme.of(context).textTheme.bodyMedium,
                 ),
               );
@@ -42,7 +43,7 @@ class HomeScreen extends StatelessWidget {
                       const SearchField(),
                       const SizedBox(height: 32.0),
                       Text(
-                        'Popular Recipes',
+                        AppLocalizations.of(context)!.popularRecipes,
                         style: Theme.of(context).textTheme.titleLarge,
                       ),
 
@@ -66,11 +67,11 @@ class HomeHeaderRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final userName = FirebaseAuth.instance.currentUser?.displayName ?? 'User';
+    final userName = FirebaseAuth.instance.currentUser?.displayName ?? AppLocalizations.of(context)!.user;
     return Row(
       children: [
         Text(
-          'Good Morning, $userName 👋',
+          AppLocalizations.of(context)!.greeting(userName),
           style: Theme.of(context).textTheme.titleMedium,
         ),
         const Spacer(),

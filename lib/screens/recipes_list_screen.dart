@@ -13,35 +13,68 @@ class RecipesListScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final recipeProvider = Provider.of<RecipeProvider>(context);
     final allRecipes = recipeProvider.recipes;
-
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
 
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: theme.appBarTheme.backgroundColor ?? (isDark ? Colors.black87 : Colors.white),
         title: Text(
-          'Recipes',
-          style: theme.appBarTheme.titleTextStyle?.copyWith(
-            color: isDark ? Colors.white : Colors.black87, // Title text color
+          'Discover Recipes',
+          style: theme.textTheme.titleLarge?.copyWith(
+            fontWeight: FontWeight.bold,
+            color: isDark ? Colors.white : Colors.black, 
           ),
         ),
+        centerTitle: true,
+        elevation: 0,
         iconTheme: IconThemeData(
-          color: isDark ? Colors.white : Colors.black87, // Icon color
+          color: isDark ? Colors.white : Colors.black, 
         ),
       ),
       body: Padding(
-        padding: const EdgeInsets.all(10.0),
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
-              ListView.builder(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
+        padding: EdgeInsets.symmetric(horizontal: 4.w, vertical: 2.h),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Search bar
+            Padding(
+              padding: EdgeInsets.only(bottom: 2.h),
+              child: TextField(
+                decoration: InputDecoration(
+                  hintText: 'Search recipes...',
+                  hintStyle: TextStyle(
+                    color: isDark ? Colors.white70 : Colors.black54, 
+                  ),
+                  prefixIcon: Icon(UniconsLine.search, 
+                    size: 18.sp,
+                    color: isDark ? Colors.white70 : Colors.black54, 
+                  ),
+                  filled: true,
+                  fillColor: isDark ? Colors.grey[900] : Colors.grey[100],
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide.none,
+                  ),
+                  contentPadding: EdgeInsets.symmetric(vertical: 2.h),
+                ),
+                style: TextStyle(
+                  color: isDark ? Colors.white : Colors.black, 
+                ),
+              ),
+            ),
+            Expanded(
+              child: GridView.builder(
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 2,
+                  crossAxisSpacing: 4.w,
+                  mainAxisSpacing: 2.h,
+                  childAspectRatio: 0.8,
+                ),
                 itemCount: allRecipes.length,
                 itemBuilder: (context, index) {
                   final recipe = allRecipes[index];
                   return InkWell(
+                    borderRadius: BorderRadius.circular(12),
                     onTap: () {
                       Navigator.push(
                         context,
@@ -51,61 +84,78 @@ class RecipesListScreen extends StatelessWidget {
                         ),
                       );
                     },
-                    child: Padding(
-                      padding: const EdgeInsets.only(bottom: 20.0),
-                      child: SizedBox(
-                        height: 20.0.h,
-                        child: Material(
-                          color: theme.cardColor,
-                          elevation: 2.0,
-                          child: Row(
-                            children: [
-                              Image.asset(
+                    child: Card(
+                      elevation: 2,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      // Always use white card color regardless of theme
+                      color: Colors.white, 
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Expanded(
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.vertical(
+                                top: Radius.circular(12),
+                              ),
+                              child: Image.asset(
                                 recipe.imageUrl,
-                                height: 20.0.h,
-                                width: 18.0.h,
+                                width: double.infinity,
                                 fit: BoxFit.cover,
                               ),
-                              SizedBox(width: 2.0.h),
-                              Expanded(
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  crossAxisAlignment: CrossAxisAlignment.start,
+                            ),
+                          ),
+                          Padding(
+                            padding: EdgeInsets.all(2.w),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  recipe.title,
+                                  style: TextStyle(
+                                    fontSize: 14.sp,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.black, // Always black text
+                                  ),
+                                  maxLines: 2,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                                SizedBox(height: 1.h),
+                                Row(
                                   children: [
-                                    Text(
-                                      recipe.title,
-                                      style: theme.textTheme.headlineMedium,
-                                      overflow: TextOverflow.ellipsis,
-                                      maxLines: 2,
+                                    Icon(
+                                      UniconsLine.clock,
+                                      size: 14.sp,
+                                      color: theme.primaryColor,
                                     ),
-                                    SizedBox(height: 1.5.h),
-                                    Row(
-                                      children: [
-                                        Icon(
-                                          UniconsLine.clock,
-                                          size: 16.0,
-                                          color: theme.iconTheme.color,
-                                        ),
-                                        SizedBox(width: 1.5.w),
-                                        Text(
-                                          '${recipe.cookTime}M Prep',
-                                          style: theme.textTheme.bodyMedium,
-                                        ),
-                                      ],
+                                    SizedBox(width: 1.w),
+                                    Text(
+                                      '${recipe.cookTime} min',
+                                      style: TextStyle(
+                                        fontSize: 10.sp,
+                                        color: Colors.black54, // Always dark gray text
+                                      ),
+                                    ),
+                                    Spacer(),
+                                    Icon(
+                                      Icons.favorite_border,
+                                      size: 14.sp,
+                                      color: theme.primaryColor,
                                     ),
                                   ],
                                 ),
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
-                        ),
+                        ],
                       ),
                     ),
                   );
                 },
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
