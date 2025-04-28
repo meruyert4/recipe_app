@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:sizer/sizer.dart';
 import 'package:unicons/unicons.dart';
 import 'package:recipe_app/provider/recipe_provider.dart';
+import 'package:recipe_app/custom_theme.dart';
 class SearchField extends StatefulWidget {
   const SearchField({Key? key}) : super(key: key);
 
@@ -38,7 +39,9 @@ class _SearchFieldState extends State<SearchField> {
       borderRadius: BorderRadius.circular(8.0),
       child: TextField(
         controller: _controller,
-        style: theme.textTheme.bodyMedium,
+        style: theme.textTheme.bodyLarge?.copyWith(
+          color: theme.brightness == Brightness.dark ? Colors.white : Colors.black, // Adjust text color based on theme
+        ),
         decoration: InputDecoration(
           filled: true,
           fillColor: theme.cardColor,
@@ -58,10 +61,6 @@ class _SearchFieldState extends State<SearchField> {
             },
           ),
           hintText: 'Search recipe here...',
-          hintStyle: TextStyle(
-            color: theme.brightness == Brightness.dark ? Colors.white70 : Colors.black54, // Ensure hintStyle color
-            fontSize: 10.0.sp,
-          ),
           enabledBorder: OutlineInputBorder(
             borderSide: BorderSide(width: 1.0, color: theme.dividerColor),
             borderRadius: BorderRadius.circular(8.0),

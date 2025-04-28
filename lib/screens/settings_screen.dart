@@ -39,7 +39,12 @@ class SettingsScreen extends StatelessWidget {
             ),
           ),
           ListTile(
-            title: Text(AppLocalizations.of(context)!.changeLanguage),
+            title: Text(
+              AppLocalizations.of(context)!.changeLanguage,
+              style: theme.textTheme.bodyLarge?.copyWith(
+                color: isDark ? Colors.white : Colors.black, // Adjust text color based on theme
+              ),
+            ),
             trailing: const Icon(Icons.language),
             onTap: () {
               localeProvider.toggleLocale();
