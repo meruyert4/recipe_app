@@ -4,6 +4,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:sizer/sizer.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
 import 'package:recipe_app/provider/provider.dart';
 import 'package:recipe_app/provider/locale_provider.dart';
 import 'package:recipe_app/firebase_options.dart';
@@ -43,7 +44,7 @@ class MyApp extends StatelessWidget {
         return MaterialApp(
           title: 'FairyFridge',
           debugShowCheckedModeBanner: false,
-          themeMode: themeProvider.themeMode, // <- dynamic mode
+          themeMode: themeProvider.themeMode,
           theme: CustomTheme.lightTheme,
           darkTheme: CustomTheme.darkTheme,
           locale: localeProvider.locale,
@@ -69,9 +70,9 @@ class AuthGate extends StatelessWidget {
             body: Center(child: CircularProgressIndicator()),
           );
         } else if (snapshot.hasData) {
-          return const CustomNavBar();
+          return const CustomNavBar(isGuest: false); // Authenticated user
         } else {
-          return const LoginScreen();
+          return const CustomNavBar(isGuest: true); // Guest user
         }
       },
     );

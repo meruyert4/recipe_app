@@ -184,7 +184,7 @@ class EmptyRecipe extends StatelessWidget {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (_) => const CustomNavBar(),
+                  builder: (_) => const CustomNavBar(isGuest: false,),
                 ),
               );
             },

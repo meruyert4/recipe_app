@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:sizer/sizer.dart';
-import 'package:google_sign_in/google_sign_in.dart';
+// import 'package:google_sign_in/google_sign_in.dart';
 
 import 'package:recipe_app/screens/home_screen.dart';
 import 'package:recipe_app/screens/auth/register_screen.dart';
@@ -72,30 +72,30 @@ class _LoginScreenState extends State<LoginScreen> {
     });
   }
 
-  Future<void> loginWithGoogle() async {
-    setState(() {
-      isLoading = true;
-      error = null;
-    });
+  // Future<void> loginWithGoogle() async {
+  //   setState(() {
+  //     isLoading = true;
+  //     error = null;
+  //   });
 
-    final authService = AuthService();
-    final user = await authService.signInWithGoogle();
+  //   final authService = AuthService();
+  //   final user = await authService.signInWithGoogle();
 
-    if (user != null) {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => const HomeScreen()),
-      );
-    } else {
-      setState(() {
-        error = 'Google sign-in failed.';
-      });
-    }
+  //   if (user != null) {
+  //     Navigator.pushReplacement(
+  //       context,
+  //       MaterialPageRoute(builder: (context) => const HomeScreen()),
+  //     );
+  //   } else {
+  //     setState(() {
+  //       error = 'Google sign-in failed.';
+  //     });
+  //   }
 
-    setState(() {
-      isLoading = false;
-    });
-  }
+  //   setState(() {
+  //     isLoading = false;
+  //   });
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -202,26 +202,26 @@ class _LoginScreenState extends State<LoginScreen> {
               SizedBox(height: 2.h),
 
               // Google Sign-In Button
-              Center(
-                child: OutlinedButton.icon(
-                  icon: Image.asset(
-                    'assets/google_icon.png', // Make sure this icon exists
-                    height: 24,
-                    width: 24,
-                  ),
-                  label: Text("Sign in with Google"),
-                  onPressed: loginWithGoogle,
-                  style: OutlinedButton.styleFrom(
-                    padding:
-                        EdgeInsets.symmetric(horizontal: 4.w, vertical: 1.5.h),
-                    side: BorderSide(color: Theme.of(context).primaryColor),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                  ),
-                ),
-              ),
-              SizedBox(height: 2.h),
+              // Center(
+              //   child: OutlinedButton.icon(
+              //     icon: Image.asset(
+              //       'assets/google_icon.png', // Make sure this icon exists
+              //       height: 24,
+              //       width: 24,
+              //     ),
+              //     label: Text("Sign in with Google"),
+              //     onPressed: loginWithGoogle,
+              //     style: OutlinedButton.styleFrom(
+              //       padding:
+              //           EdgeInsets.symmetric(horizontal: 4.w, vertical: 1.5.h),
+              //       side: BorderSide(color: Theme.of(context).primaryColor),
+              //       shape: RoundedRectangleBorder(
+              //         borderRadius: BorderRadius.circular(12),
+              //       ),
+              //     ),
+              //   ),
+              // ),
+              // SizedBox(height: 2.h),
 
               // Guest Mode
               Center(

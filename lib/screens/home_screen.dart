@@ -216,8 +216,11 @@ class HomeStack extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final secondaryTextColor = Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.6);
+    final deviceWidth = MediaQuery.of(context).size.width;
 
     return Container(
+      width: deviceWidth * 0.5, // адаптивная ширина
+      margin: const EdgeInsets.only(bottom: 10),
       decoration: BoxDecoration(
         boxShadow: [
           BoxShadow(
@@ -230,66 +233,71 @@ class HomeStack extends StatelessWidget {
       ),
       child: Stack(
         children: [
-          Image.asset(
-            image,
-            height: 350.0,
-            width: 200.0,
-            fit: BoxFit.cover,
-            errorBuilder: (context, error, stackTrace) => const Icon(Icons.fastfood, size: 40),
+          ClipRRect(
+            borderRadius: BorderRadius.circular(16),
+            child: Image.asset(
+              image,
+              height: 350,
+              width: double.infinity,
+              fit: BoxFit.cover,
+              errorBuilder: (context, error, stackTrace) =>
+                  const Icon(Icons.fastfood, size: 40),
+            ),
           ),
           Positioned(
-            bottom: 10.0,
-            right: 12.0,
+            bottom: 10,
+            left: 10,
+            right: 10,
             child: Container(
-              width: 180.0,
-              height: 110.0,
+              padding: const EdgeInsets.all(10),
               decoration: BoxDecoration(
-                color: Theme.of(context).cardColor,
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black87.withOpacity(0.2),
-                    spreadRadius: 2,
-                    blurRadius: 5,
-                    offset: const Offset(0, 2),
+                color: Theme.of(context).cardColor.withOpacity(0.85),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    text,
+                    style: Theme.of(context).textTheme.titleMedium,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  const SizedBox(height: 5),
+                  Row(
+                    children: [
+                      const Icon(UniconsLine.clock, size: 16),
+                      const SizedBox(width: 5),
+                      Expanded(
+                        child: Text(
+                          '${cookTime.toStringAsFixed(0)} M Total',
+                          style: Theme.of(context)
+                              .textTheme
+                              .bodySmall
+                              ?.copyWith(color: secondaryTextColor),
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 5),
+                  Row(
+                    children: [
+                      const Icon(UniconsLine.star, size: 16),
+                      const SizedBox(width: 5),
+                      Expanded(
+                        child: Text(
+                          recipeReview.toStringAsFixed(1),
+                          style: Theme.of(context)
+                              .textTheme
+                              .bodySmall
+                              ?.copyWith(color: secondaryTextColor),
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                    ],
                   ),
                 ],
-              ),
-              child: Padding(
-                padding: const EdgeInsets.all(10.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      text,
-                      style: Theme.of(context).textTheme.headlineMedium,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    const SizedBox(height: 5.0),
-                    const Spacer(),
-                    Row(
-                      children: [
-                        const Icon(UniconsLine.clock, size: 16),
-                        const SizedBox(width: 5.0),
-                        Text(
-                          '${cookTime.toStringAsFixed(0)} M Total',
-                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: secondaryTextColor),
-                        ),
-                      ],
-                    ),
-                    const Spacer(),
-                    Row(
-                      children: [
-                        const Icon(UniconsLine.star, size: 16),
-                        const SizedBox(width: 5.0),
-                        Text(
-                          recipeReview.toStringAsFixed(1),
-                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: secondaryTextColor),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
               ),
             ),
           ),
@@ -298,3 +306,4 @@ class HomeStack extends StatelessWidget {
     );
   }
 }
+

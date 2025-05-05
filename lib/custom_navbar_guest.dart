@@ -4,16 +4,14 @@ import 'package:sizer/sizer.dart';
 import 'package:unicons/unicons.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
-class CustomNavBar extends StatefulWidget {
-  final bool isGuest; // Add the isGuest parameter
-
-  const CustomNavBar({Key? key, required this.isGuest}) : super(key: key);
+class CustomNavBarGuest extends StatefulWidget {
+  const CustomNavBarGuest({Key? key}) : super(key: key);
 
   @override
-  _CustomNavBarState createState() => _CustomNavBarState();
+  State<CustomNavBarGuest> createState() => _CustomNavBarGuestState();
 }
 
-class _CustomNavBarState extends State<CustomNavBar>
+class _CustomNavBarGuestState extends State<CustomNavBarGuest>
     with SingleTickerProviderStateMixin {
   int selectedIndex = 0;
 
@@ -55,39 +53,7 @@ class _CustomNavBarState extends State<CustomNavBar>
       ),
     ];
 
-    // Pages for authenticated users (add saved and fridge tabs if needed)
-    final authenticatedPages = [
-      const HomeScreen(),
-      const RecipesListScreen(),
-      const ForumScreen(),
-      const ProfileScreen(),
-    ];
-
-    final authenticatedItems = [
-      BottomNavigationBarItem(
-        icon: const Icon(UniconsLine.home),
-        label: localizations.home,
-      ),
-      BottomNavigationBarItem(
-        icon: const Icon(UniconsLine.restaurant),
-        label: localizations.recipes,
-      ),
-      BottomNavigationBarItem(
-        icon: const Icon(UniconsLine.comments),
-        label: localizations.forum,
-      ),
-      BottomNavigationBarItem(
-        icon: const Icon(UniconsLine.user),
-        label: localizations.profile,
-      ),
-    ];
-
-    // Use the pages and items based on isGuest
-    final pages = widget.isGuest ? guestPages : authenticatedPages;
-    final items = widget.isGuest ? guestItems : authenticatedItems;
-
-    // Safe index handling
-    final safeIndex = selectedIndex >= pages.length ? 0 : selectedIndex;
+    final safeIndex = selectedIndex >= guestPages.length ? 0 : selectedIndex;
 
     return Scaffold(
       bottomNavigationBar: BottomNavigationBar(
@@ -102,9 +68,9 @@ class _CustomNavBarState extends State<CustomNavBar>
         selectedItemColor: theme.primaryColor,
         unselectedItemColor: theme.unselectedWidgetColor,
         type: BottomNavigationBarType.fixed,
-        items: items,
+        items: guestItems,
       ),
-      body: pages.elementAt(safeIndex),
+      body: guestPages.elementAt(safeIndex),
     );
   }
 }

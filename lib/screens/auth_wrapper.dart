@@ -13,13 +13,11 @@ class AuthWrapper extends StatelessWidget {
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.active) {
           if (snapshot.hasData) {
-            return const CustomNavBar();
+            return const CustomNavBar(isGuest: false); 
           }
-          // If the user is not logged in, show the login screen (or other UI)
           return const LoginScreen();
         }
-        // Show loading spinner while checking auth state
-        return const CircularProgressIndicator();
+        return const Center(child: CircularProgressIndicator());
       },
     );
   }

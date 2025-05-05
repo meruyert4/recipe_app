@@ -6,6 +6,7 @@ import 'package:firebase_database/firebase_database.dart';
 import 'edit_profile_screen.dart';
 import 'package:recipe_app/screens/screens.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:recipe_app/screens/auth/login_screen.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({Key? key}) : super(key: key);
@@ -14,7 +15,6 @@ class ProfileScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     User? user = FirebaseAuth.instance.currentUser;
 
-    // Get the current theme's scaffold background color
     final isDarkMode = Theme.of(context).scaffoldBackgroundColor == const Color(0xFF121212);
 
     return Scaffold(
@@ -136,7 +136,6 @@ class ProfileListTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Get the current theme's scaffold background color
     final isDarkMode = Theme.of(context).scaffoldBackgroundColor == const Color(0xFF121212);
 
     return ListTile(
@@ -163,7 +162,6 @@ class ProfileListView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Get the current theme's scaffold background color
     return SizedBox(
       height: MediaQuery.of(context).size.height * 0.55,
       child: ListView(
@@ -176,8 +174,10 @@ class ProfileListView extends StatelessWidget {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                    builder: (context) => EditProfileScreen(
-                        user: FirebaseAuth.instance.currentUser)),
+                  builder: (context) => EditProfileScreen(
+                    user: FirebaseAuth.instance.currentUser,
+                  ),
+                ),
               );
             },
           ),
@@ -188,7 +188,9 @@ class ProfileListView extends StatelessWidget {
             onTapAction: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => const SettingsScreen()),
+                MaterialPageRoute(
+                  builder: (context) => const SettingsScreen(),
+                ),
               );
             },
           ),
@@ -199,16 +201,22 @@ class ProfileListView extends StatelessWidget {
             onTapAction: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => const AppInfoScreen()),
+                MaterialPageRoute(
+                  builder: (context) => const AppInfoScreen(),
+                ),
               );
             },
           ),
           Divider(color: Colors.grey.shade400, indent: 10.0, endIndent: 10.0),
           ProfileListTile(
             text: AppLocalizations.of(context)!.logout,
-            icon: UniconsLine.sign_out_alt,
+            icon: UniconsLine.signout,
             onTapAction: () async {
               await FirebaseAuth.instance.signOut();
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (context) => const LoginScreen()),
+              );
             },
           ),
         ],
