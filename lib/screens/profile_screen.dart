@@ -164,8 +164,6 @@ class ProfileListView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // Get the current theme's scaffold background color
-    final isDarkMode = Theme.of(context).scaffoldBackgroundColor == const Color(0xFF121212);
-
     return SizedBox(
       height: MediaQuery.of(context).size.height * 0.55,
       child: ListView(

@@ -3,9 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:recipe_app/models/user_model.dart';
 import 'package:recipe_app/screens/auth/login_screen.dart';
-import 'package:recipe_app/custom_theme.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:sizer/sizer.dart';
+import 'package:google_sign_in/google_sign_in.dart';
+import 'package:recipe_app/screens/auth/auth.dart';
+
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({Key? key}) : super(key: key);
@@ -28,8 +30,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
     });
 
     try {
-      UserCredential userCredential = await FirebaseAuth.instance
-          .createUserWithEmailAndPassword(
+      UserCredential userCredential =
+          await FirebaseAuth.instance.createUserWithEmailAndPassword(
         email: emailController.text.trim(),
         password: passwordController.text,
       );
@@ -66,12 +68,50 @@ class _RegisterScreenState extends State<RegisterScreen> {
     });
   }
 
+  Future<void> registerWithGoogle() async {
+    setState(() {
+      isLoading = true;
+      error = null;
+    });
+
+    final authService = AuthService();
+    final user = await authService.signInWithGoogle();
+
+    if (user != null) {
+      final userRef =
+          FirebaseDatabase.instance.ref().child('users/${user.uid}');
+      final snapshot = await userRef.get();
+
+      if (!snapshot.exists) {
+        final newUser = UserModel(
+          uid: user.uid,
+          email: user.email ?? '',
+          name: user.displayName ?? '',
+        );
+        await userRef.set(newUser.toJson());
+      }
+
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (_) => const LoginScreen()),
+      );
+    } else {
+      setState(() {
+        error = 'Google sign-up failed.';
+      });
+    }
+
+    setState(() {
+      isLoading = false;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: SingleChildScrollView(
         child: Padding(
-          padding: EdgeInsets.all(4.h), // Using h for responsive padding
+          padding: EdgeInsets.all(4.h),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -93,7 +133,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     error!,
                     style: GoogleFonts.openSans(
                       color: Colors.red,
-                      fontSize: 12.sp, // Proper sp usage
+                      fontSize: 12.sp,
                     ),
                   ),
                 ),
@@ -150,7 +190,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       : Text(
                           "Register",
                           style: GoogleFonts.openSans(
-                            fontSize: 14.sp, // Proper sp usage
+                            fontSize: 14.sp,
                             fontWeight: FontWeight.w600,
                             color: Colors.white,
                           ),
@@ -158,6 +198,29 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 ),
               ),
               SizedBox(height: 2.h),
+
+              // Google Sign-Up Button
+              Center(
+                child: OutlinedButton.icon(
+                  icon: Image.asset(
+                    'assets/google_icon.png', // Ensure this icon exists
+                    height: 24,
+                    width: 24,
+                  ),
+                  label: Text("Sign up with Google"),
+                  onPressed: registerWithGoogle,
+                  style: OutlinedButton.styleFrom(
+                    padding:
+                        EdgeInsets.symmetric(horizontal: 4.w, vertical: 1.5.h),
+                    side: BorderSide(color: Theme.of(context).primaryColor),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                ),
+              ),
+              SizedBox(height: 2.h),
+
               Center(
                 child: TextButton(
                   onPressed: () {

@@ -33,7 +33,6 @@ class _CustomNavBarState extends State<CustomNavBar>
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
     final localizations = AppLocalizations.of(context)!;
 
     return Scaffold(
@@ -47,7 +46,7 @@ class _CustomNavBarState extends State<CustomNavBar>
         iconSize: 18.sp,
         showUnselectedLabels: true,
         selectedItemColor: theme.primaryColor,
-        unselectedItemColor: theme.unselectedWidgetColor ?? (isDark ? Colors.grey[600] : Colors.grey),
+        unselectedItemColor: theme.unselectedWidgetColor,
         type: BottomNavigationBarType.fixed,
         items: <BottomNavigationBarItem>[
           BottomNavigationBarItem(

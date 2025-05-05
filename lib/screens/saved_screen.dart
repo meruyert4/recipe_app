@@ -14,8 +14,6 @@ class SavedScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final savedProvider = Provider.of<SavedProvider>(context);
-    final theme = Theme.of(context); // Get the current theme
-
     return Scaffold(
       body: Padding(
         padding: const EdgeInsets.only(left: 10.0, right: 10.0, top: 10.0),

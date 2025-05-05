@@ -4,7 +4,6 @@ import 'package:recipe_app/provider/recipe_provider.dart';
 import 'package:recipe_app/screens/recipe_detail_screen.dart';
 import 'package:sizer/sizer.dart';
 import 'package:unicons/unicons.dart';
-import 'package:recipe_app/custom_theme.dart';
 
 class RecipesListScreen extends StatelessWidget {
   const RecipesListScreen({Key? key}) : super(key: key);

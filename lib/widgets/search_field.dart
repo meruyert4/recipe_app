@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:sizer/sizer.dart';
 import 'package:unicons/unicons.dart';
 import 'package:recipe_app/provider/recipe_provider.dart';
-import 'package:recipe_app/custom_theme.dart';
 class SearchField extends StatefulWidget {
   const SearchField({Key? key}) : super(key: key);
 
