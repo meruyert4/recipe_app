@@ -110,7 +110,7 @@ class ForumScreen extends StatelessWidget {
                                 color: isDark ? Colors.black : Colors.white,
                               ),
                             ),
-                            backgroundColor: isDark ? Colors.green.shade700 : Colors.green.shade50, // Adjust chip color
+                            backgroundColor: isDark ? Colors.green.shade700 : Colors.green.shade200, // Adjust chip color
                           ),
                         )
                         .toList(),
