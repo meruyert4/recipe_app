@@ -4,7 +4,9 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:sizer/sizer.dart';
 
 class AppInfoScreen extends StatefulWidget {
+
   const AppInfoScreen({Key? key}) : super(key: key);
+  
 
   @override
   State<AppInfoScreen> createState() => _AppInfoScreenState();

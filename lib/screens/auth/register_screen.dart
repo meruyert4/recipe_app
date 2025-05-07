@@ -8,7 +8,6 @@ import 'package:sizer/sizer.dart';
 import 'package:recipe_app/screens/auth/auth.dart';
 import 'package:recipe_app/custom_navbar.dart';
 
-
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({Key? key}) : super(key: key);
 
@@ -17,15 +16,29 @@ class RegisterScreen extends StatefulWidget {
 }
 
 class _RegisterScreenState extends State<RegisterScreen> {
+  final _formKey = GlobalKey<FormState>();
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
   final nameController = TextEditingController();
   bool isLoading = false;
+  bool _isRegistering = false;
+  bool _isRegisteringWithGoogle = false;
   String? error;
 
-Future<void> register() async {
+  @override
+  void dispose() {
+    emailController.dispose();
+    passwordController.dispose();
+    nameController.dispose();
+    super.dispose();
+  }
+
+  Future<void> register() async {
+    if (_isRegistering || !_formKey.currentState!.validate()) return;
+
     setState(() {
       isLoading = true;
+      _isRegistering = true;
       error = null;
     });
 
@@ -52,32 +65,39 @@ Future<void> register() async {
             .child('users/${user.uid}')
             .set(newUser.toJson());
 
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (_) => const CustomNavBar(isGuest: false)),
-        );
+        if (mounted) {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (_) => const CustomNavBar(isGuest: false)),
+          );
+        }
       }
     } catch (e) {
       final errorMessage = _getErrorMessage(e);
-      _showError(errorMessage);
+      _showErrorDialog(errorMessage);
+    } finally {
+      if (mounted) {
+        setState(() {
+          isLoading = false;
+          _isRegistering = false;
+        });
+      }
     }
-
-    setState(() {
-      isLoading = false;
-    });
   }
 
   String _getErrorMessage(dynamic error) {
     if (error is FirebaseAuthException) {
       switch (error.code) {
         case 'weak-password':
-          return 'The password provided is too weak.';
+          return 'The password provided is too weak. Please use a stronger password.';
         case 'email-already-in-use':
-          return 'The account already exists for that email.';
+          return 'The account already exists for that email. Please login instead.';
         case 'invalid-email':
-          return 'The email address is not valid.';
+          return 'The email address is not valid. Please check your email.';
         case 'network-request-failed':
           return 'Network error. Please check your internet connection.';
+        case 'operation-not-allowed':
+          return 'Email/password accounts are not enabled.';
         default:
           return 'Registration failed: ${error.message}';
       }
@@ -85,52 +105,63 @@ Future<void> register() async {
     return 'An unexpected error occurred. Please try again.';
   }
 
-  void _showError(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
+  Future<void> _showErrorDialog(String message) {
+    return showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Registration Error'),
         content: Text(message),
-        backgroundColor: Colors.red,
-        duration: const Duration(seconds: 3),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('OK'),
+          ),
+        ],
       ),
     );
   }
   
   Future<void> registerWithGoogle() async {
+    if (_isRegisteringWithGoogle) return;
+
     setState(() {
       isLoading = true;
+      _isRegisteringWithGoogle = true;
       error = null;
     });
 
-    final authService = AuthService();
-    final user = await authService.signInWithGoogle();
+    try {
+      final authService = AuthService();
+      final user = await authService.signInWithGoogle();
 
-    if (user != null) {
-      final userRef =
-          FirebaseDatabase.instance.ref().child('users/${user.uid}');
-      final snapshot = await userRef.get();
+      if (user != null && mounted) {
+        final userRef = FirebaseDatabase.instance.ref().child('users/${user.uid}');
+        final snapshot = await userRef.get();
 
-      if (!snapshot.exists) {
-        final newUser = UserModel(
-          uid: user.uid,
-          email: user.email ?? '',
-          name: user.displayName ?? '',
+        if (!snapshot.exists) {
+          final newUser = UserModel(
+            uid: user.uid,
+            email: user.email ?? '',
+            name: user.displayName ?? '',
+          );
+          await userRef.set(newUser.toJson());
+        }
+
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (_) => const CustomNavBar(isGuest: false)),
         );
-        await userRef.set(newUser.toJson());
       }
-
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (_) => const LoginScreen()),
-      );
-    } else {
-      setState(() {
-        error = 'Google sign-up failed.';
-      });
+    } catch (e) {
+      _showErrorDialog('Google sign-up failed: ${e.toString()}');
+    } finally {
+      if (mounted) {
+        setState(() {
+          isLoading = false;
+          _isRegisteringWithGoogle = false;
+        });
+      }
     }
-
-    setState(() {
-      isLoading = false;
-    });
   }
 
   @override
@@ -139,132 +170,143 @@ Future<void> register() async {
       body: SingleChildScrollView(
         child: Padding(
           padding: EdgeInsets.all(4.h),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              SizedBox(height: 10.h),
-              Text(
-                'Create Account',
-                style: Theme.of(context).textTheme.displayLarge,
-              ),
-              SizedBox(height: 1.h),
-              Text(
-                'Join us to get started',
-                style: Theme.of(context).textTheme.headlineMedium,
-              ),
-              SizedBox(height: 5.h),
-              if (error != null)
-                Padding(
-                  padding: EdgeInsets.only(bottom: 2.h),
-                  child: Text(
-                    error!,
-                    style: GoogleFonts.openSans(
-                      color: Colors.red,
-                      fontSize: 12.sp,
-                    ),
-                  ),
+          child: Form(
+            key: _formKey,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                SizedBox(height: 10.h),
+                Text(
+                  'Create Account',
+                  style: Theme.of(context).textTheme.displayLarge,
                 ),
-              TextField(
-                controller: nameController,
-                decoration: InputDecoration(
-                  labelText: "Full Name",
-                  labelStyle: Theme.of(context).textTheme.bodyMedium,
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
+                SizedBox(height: 1.h),
+                Text(
+                  'Join us to get started',
+                  style: Theme.of(context).textTheme.headlineMedium,
                 ),
-                style: Theme.of(context).textTheme.bodyMedium,
-              ),
-              SizedBox(height: 2.h),
-              TextField(
-                controller: emailController,
-                decoration: InputDecoration(
-                  labelText: "Email",
-                  labelStyle: Theme.of(context).textTheme.bodyMedium,
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                ),
-                style: Theme.of(context).textTheme.bodyMedium,
-              ),
-              SizedBox(height: 2.h),
-              TextField(
-                controller: passwordController,
-                obscureText: true,
-                decoration: InputDecoration(
-                  labelText: "Password",
-                  labelStyle: Theme.of(context).textTheme.bodyMedium,
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                ),
-                style: Theme.of(context).textTheme.bodyMedium,
-              ),
-              SizedBox(height: 4.h),
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: register,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Theme.of(context).primaryColor,
-                    padding: EdgeInsets.symmetric(vertical: 2.h),
-                    shape: RoundedRectangleBorder(
+                SizedBox(height: 5.h),
+
+                // Name Field
+                TextFormField(
+                  controller: nameController,
+                  decoration: InputDecoration(
+                    labelText: "Full Name",
+                    labelStyle: Theme.of(context).textTheme.bodyMedium,
+                    border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
+                    prefixIcon: const Icon(Icons.person),
                   ),
-                  child: isLoading
-                      ? CircularProgressIndicator(color: Colors.white)
-                      : Text(
-                          "Register",
-                          style: GoogleFonts.openSans(
-                            fontSize: 14.sp,
-                            fontWeight: FontWeight.w600,
-                            color: Colors.white,
-                          ),
-                        ),
-                ),
-              ),
-              SizedBox(height: 2.h),
-
-              // Google Sign-Up Button
-              Center(
-                child: OutlinedButton.icon(
-                  icon: Image.asset(
-                    'assets/google_icon.png', // Ensure this icon exists
-                    height: 24,
-                    width: 24,
-                  ),
-                  label: Text("Sign up with Google"),
-                  onPressed: registerWithGoogle,
-                  style: OutlinedButton.styleFrom(
-                    padding:
-                        EdgeInsets.symmetric(horizontal: 4.w, vertical: 1.5.h),
-                    side: BorderSide(color: Theme.of(context).primaryColor),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                  ),
-                ),
-              ),
-              SizedBox(height: 2.h),
-
-              Center(
-                child: TextButton(
-                  onPressed: () {
-                    Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(builder: (_) => const LoginScreen()),
-                    );
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please enter your name';
+                    }
+                    return null;
                   },
-                  child: Text(
-                    "Already have an account? Login here",
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: Theme.of(context).primaryColor,
-                        ),
+                ),
+                SizedBox(height: 2.h),
+
+                // Email Field
+                TextFormField(
+                  controller: emailController,
+                  decoration: InputDecoration(
+                    labelText: "Email",
+                    labelStyle: Theme.of(context).textTheme.bodyMedium,
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    prefixIcon: const Icon(Icons.email),
+                  ),
+                  keyboardType: TextInputType.emailAddress,
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please enter your email';
+                    }
+                    if (!value.contains('@')) {
+                      return 'Please enter a valid email';
+                    }
+                    return null;
+                  },
+                ),
+                SizedBox(height: 2.h),
+
+                // Password Field
+                TextFormField(
+                  controller: passwordController,
+                  obscureText: true,
+                  decoration: InputDecoration(
+                    labelText: "Password",
+                    labelStyle: Theme.of(context).textTheme.bodyMedium,
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    prefixIcon: const Icon(Icons.lock),
+                  ),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please enter your password';
+                    }
+                    if (value.length < 6) {
+                      return 'Password must be at least 6 characters';
+                    }
+                    return null;
+                  },
+                ),
+                SizedBox(height: 4.h),
+
+                // Register Button
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: _isRegistering ? null : register,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Theme.of(context).primaryColor,
+                      padding: EdgeInsets.symmetric(vertical: 2.h),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                    child: _isRegistering
+                        ? const SizedBox(
+                            height: 24,
+                            width: 24,
+                            child: CircularProgressIndicator(
+                              color: Colors.white,
+                              strokeWidth: 3,
+                            ),
+                          )
+                        : Text(
+                            "Register",
+                            style: GoogleFonts.openSans(
+                              fontSize: 14.sp,
+                              fontWeight: FontWeight.w600,
+                              color: Colors.white,
+                            ),
+                          ),
                   ),
                 ),
-              ),
-            ],
+                SizedBox(height: 2.h),
+                Center(
+                  child: TextButton(
+                    onPressed: isLoading
+                        ? null
+                        : () {
+                            Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(builder: (_) => const LoginScreen()),
+                            );
+                          },
+                    child: Text(
+                      "Already have an account? Login here",
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            color: Theme.of(context).primaryColor,
+                          ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),

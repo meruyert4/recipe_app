@@ -70,7 +70,6 @@ class AuthGate extends StatefulWidget {
 class _AuthGateState extends State<AuthGate> {
   final AuthService _authService = AuthService();
   bool _isCheckingAuth = true;
-  bool _isGuest = false;
 
   @override
   void initState() {
@@ -80,17 +79,10 @@ class _AuthGateState extends State<AuthGate> {
 
   Future<void> _checkAuthStatus() async {
     try {
-      final user = FirebaseAuth.instance.currentUser;
-      if (user != null) {
-        _isGuest = _authService.isGuest();
-        setState(() {
-          _isCheckingAuth = false;
-        });
-      } else {
-        setState(() {
-          _isCheckingAuth = false;
-        });
-      }
+      // Just trigger the check, the StreamBuilder will handle the actual state
+      setState(() {
+        _isCheckingAuth = false;
+      });
     } catch (e) {
       print('Auth check error: $e');
       setState(() {
@@ -104,18 +96,21 @@ class _AuthGateState extends State<AuthGate> {
     return StreamBuilder<User?>(
       stream: FirebaseAuth.instance.authStateChanges(),
       builder: (context, snapshot) {
+        // Show loading indicator while checking initial auth state
         if (_isCheckingAuth) {
           return const Scaffold(
             body: Center(child: CircularProgressIndicator()),
           );
         }
 
+        // Handle connection state
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Scaffold(
             body: Center(child: CircularProgressIndicator()),
           );
         }
 
+        // Handle errors
         if (snapshot.hasError) {
           return Scaffold(
             body: Center(
@@ -124,37 +119,48 @@ class _AuthGateState extends State<AuthGate> {
         }
 
         final user = snapshot.data;
+        
         if (user != null) {
-          return FutureBuilder<bool>(
-            future: _checkIfGuest(user),
-            builder: (context, guestSnapshot) {
-              if (guestSnapshot.connectionState == ConnectionState.waiting) {
-                return const Scaffold(
-                  body: Center(child: CircularProgressIndicator()),
-                );
-              }
-              return CustomNavBar(isGuest: guestSnapshot.data ?? true);
-            },
-          );
+          // User is signed in
+          if (user.isAnonymous) {
+            // Guest user
+            return const CustomNavBar(isGuest: true);
+          } else {
+            // Regular authenticated user
+            return FutureBuilder<DataSnapshot>(
+              future: FirebaseDatabase.instance
+                  .ref()
+                  .child('users/${user.uid}')
+                  .get(),
+              builder: (context, userSnapshot) {
+                if (userSnapshot.connectionState == ConnectionState.waiting) {
+                  return const Scaffold(
+                    body: Center(child: CircularProgressIndicator()),
+                  );
+                }
+
+                if (userSnapshot.hasError) {
+                  return Scaffold(
+                    body: Center(
+                        child: Text('Error loading user data: ${userSnapshot.error}')),
+                  );
+                }
+
+                // User data exists, proceed to home
+                if (userSnapshot.hasData && userSnapshot.data!.value != null) {
+                  return const CustomNavBar(isGuest: false);
+                }
+
+                // This shouldn't normally happen for authenticated users
+                return const LoginScreen();
+              },
+            );
+          }
         } else {
+          // No user is signed in
           return const LoginScreen();
         }
       },
     );
-  }
-
-  Future<bool> _checkIfGuest(User user) async {
-    if (user.isAnonymous) return true;
-    
-    try {
-      final snapshot = await FirebaseDatabase.instance
-          .ref()
-          .child('users/${user.uid}/isGuest')
-          .get();
-      return snapshot.value as bool? ?? false;
-    } catch (e) {
-      print('Error checking guest status: $e');
-      return false;
-    }
   }
 }
