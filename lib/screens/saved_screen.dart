@@ -14,15 +14,14 @@ class SavedScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final savedProvider = Provider.of<SavedProvider>(context);
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    
     return Scaffold(
-      body: Padding(
-        padding: const EdgeInsets.only(left: 10.0, right: 10.0, top: 10.0),
-        child: SingleChildScrollView(
-          physics: const AlwaysScrollableScrollPhysics(),
-          child: savedProvider.getSaved.isEmpty
-              ? const EmptyRecipe()
-              : const SavedRecipes(),
-        ),
+      backgroundColor: isDark ? Colors.black : Theme.of(context).colorScheme.background,
+      body: SafeArea(
+        child: savedProvider.getSaved.isEmpty
+            ? const EmptyRecipe()
+            : const SavedRecipes(),
       ),
     );
   }
@@ -40,118 +39,262 @@ class _SavedRecipesState extends State<SavedRecipes> {
   Widget build(BuildContext context) {
     final savedProvider = Provider.of<SavedProvider>(context);
     final savedList = savedProvider.getSaved.values.toList();
-    final theme = Theme.of(context); // Get the current theme
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        SizedBox(height: 6.0.h),
-        Text(
-          AppLocalizations.of(context)!.saved,
-          style: theme.textTheme.displayLarge, // Apply theme
-        ),
-        SizedBox(height: 4.0.h),
-        const TabRow(),
-        SizedBox(height: 2.0.h),
-        ListView.separated(
-          physics: const NeverScrollableScrollPhysics(),
-          shrinkWrap: true,
-          separatorBuilder: (context, index) => const SizedBox(height: 15.0),
-          itemCount: savedList.length,
-          itemBuilder: (context, index) {
-            final recipe = savedList[index];
-            return Dismissible(
-              key: UniqueKey(),
-              direction: DismissDirection.endToStart,
-              background: Container(
-                alignment: Alignment.centerRight,
-                color: Colors.red,
-                padding: const EdgeInsets.only(right: 15.0),
-                child: Icon(
-                  UniconsLine.trash,
-                  color: Colors.white,
-                  size: 20.sp,
+    return CustomScrollView(
+      physics: const BouncingScrollPhysics(),
+      slivers: [
+        SliverToBoxAdapter(
+          child: Padding(
+            padding: EdgeInsets.symmetric(horizontal: 4.w, vertical: 2.h),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                SizedBox(height: 2.h),
+                Text(
+                  AppLocalizations.of(context)!.saved,
+                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                        fontSize: 24.sp,
+                        fontWeight: FontWeight.w700,
+                      ),
                 ),
-              ),
-              onDismissed: (_) {
-                setState(() {
-                  savedProvider.removeRecipe(recipe.title);
-                });
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(
-                      AppLocalizations.of(context)!.recipeDeleted(recipe.title),
+                SizedBox(height: 2.h),
+                const TabRowRedesigned(),
+                SizedBox(height: 2.h),
+              ],
+            ),
+          ),
+        ),
+        SliverList(
+          delegate: SliverChildBuilderDelegate(
+            (context, index) {
+              final recipe = savedList[index];
+              return Padding(
+                padding: EdgeInsets.symmetric(horizontal: 4.w, vertical: 1.h),
+                child: Dismissible(
+                  key: UniqueKey(),
+                  direction: DismissDirection.endToStart,
+                  background: Container(
+                    alignment: Alignment.centerRight,
+                    decoration: BoxDecoration(
+                      color: Colors.red.shade400,
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    padding: EdgeInsets.only(right: 4.w),
+                    child: Icon(
+                      UniconsLine.trash,
+                      color: Colors.white,
+                      size: 18.sp,
                     ),
                   ),
-                );
-              },
-              child: InkWell(
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const RecipeDetailScreen(),
-                      settings: RouteSettings(arguments: recipe.toRecipe()),
-                    ),
-                  );
-                },
-                child: SizedBox(
-                  height: 20.0.h,
-                  child: Material(
-                    color: theme.cardColor, // Apply theme card color
-                    elevation: 2.0,
-                    child: Row(
-                      children: [
-                        Image.asset(
-                          recipe.imageUrl,
-                          height: 20.0.h,
-                          width: 20.0.h,
-                          fit: BoxFit.cover,
-                          errorBuilder: (_, __, ___) =>
-                              const Icon(Icons.image_not_supported),
+                  onDismissed: (_) {
+                    setState(() {
+                      savedProvider.removeRecipe(recipe.title);
+                    });
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text(
+                          AppLocalizations.of(context)!.recipeDeleted(recipe.title),
                         ),
-                        SizedBox(width: 2.0.h),
-                        Expanded(
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 10.0),
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  recipe.title,
-                                  style: theme.textTheme.headlineMedium, // Apply theme
-                                  maxLines: 2,
-                                  overflow: TextOverflow.ellipsis,
+                        behavior: SnackBarBehavior.floating,
+                        backgroundColor: isDark ? Colors.grey[800] : Colors.black87,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        action: SnackBarAction(
+                          label: 'UNDO',
+                          textColor: Theme.of(context).primaryColor,
+                          onPressed: () {
+                            // Add back recipe logic here
+                            // savedProvider.addRecipe(recipe);
+                          },
+                        ),
+                      ),
+                    );
+                  },
+                  child: GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const RecipeDetailScreen(),
+                          settings: RouteSettings(arguments: recipe.toRecipe()),
+                        ),
+                      );
+                    },
+                    child: Container(
+                      height: 14.h,
+                      decoration: BoxDecoration(
+                        color: isDark ? Colors.grey[900] : Colors.white,
+                        borderRadius: BorderRadius.circular(16),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(isDark ? 0.3 : 0.1),
+                            blurRadius: 8,
+                            offset: const Offset(0, 3),
+                          ),
+                        ],
+                      ),
+                      child: Row(
+                        children: [
+                          ClipRRect(
+                            borderRadius: BorderRadius.horizontal(left: Radius.circular(16)),
+                            child: Image.asset(
+                              recipe.imageUrl,
+                              height: 14.h,
+                              width: 14.h,
+                              fit: BoxFit.cover,
+                              errorBuilder: (_, __, ___) => Container(
+                                height: 14.h,
+                                width: 14.h,
+                                color: isDark ? Colors.grey[800] : Colors.grey[200],
+                                child: Icon(
+                                  Icons.broken_image,
+                                  color: isDark ? Colors.grey[600] : Colors.grey[400],
+                                  size: 24.sp,
                                 ),
-                                SizedBox(height: 1.5.h),
-                                Row(
-                                  children: [
-                                    Icon(
-                                      UniconsLine.clock,
-                                      size: 16.0,
-                                      color: theme.iconTheme.color, // Apply theme icon color
-                                    ),
-                                    SizedBox(width: 1.5.w),
-                                    Text(
-                                      '${recipe.cookTime.toStringAsFixed(0)} M Prep',
-                                      style: theme.textTheme.bodyMedium, // Apply theme body text style
-                                    ),
-                                  ],
-                                ),
-                              ],
+                              ),
                             ),
                           ),
-                        ),
-                      ],
+                          Expanded(
+                            child: Padding(
+                              padding: EdgeInsets.all(3.w),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Text(
+                                    recipe.title,
+                                    style: TextStyle(
+                                      fontSize: 14.sp,
+                                      fontWeight: FontWeight.bold,
+                                      color: isDark ? Colors.white : Colors.black87,
+                                    ),
+                                    maxLines: 2,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                  SizedBox(height: 1.h),
+                                  Row(
+                                    children: [
+                                      Icon(
+                                        UniconsLine.clock,
+                                        size: 14.sp,
+                                        color: isDark ? Colors.white70 : Colors.grey[600],
+                                      ),
+                                      SizedBox(width: 1.w),
+                                      Text(
+                                        '${recipe.cookTime.toStringAsFixed(0)} min',
+                                        style: TextStyle(
+                                          fontSize: 12.sp,
+                                          color: isDark ? Colors.white70 : Colors.grey[600],
+                                        ),
+                                      ),
+                                      SizedBox(width: 3.w),
+                                      Icon(
+                                        UniconsLine.star,
+                                        size: 14.sp,
+                                        color: Colors.amber,
+                                      ),
+                                      SizedBox(width: 1.w),
+                                      Text(
+                                        '4.5',
+                                        style: TextStyle(
+                                          fontSize: 12.sp,
+                                          color: isDark ? Colors.white70 : Colors.grey[600],
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                          Container(
+                            height: 14.h,
+                            width: 12.w,
+                            decoration: BoxDecoration(
+                              color: Theme.of(context).primaryColor.withOpacity(0.1),
+                              borderRadius: BorderRadius.horizontal(right: Radius.circular(16)),
+                            ),
+                            child: Center(
+                              child: Icon(
+                                UniconsLine.bookmark,
+                                color: Theme.of(context).primaryColor,
+                                size: 18.sp,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ),
-              ),
-            );
-          },
+              );
+            },
+            childCount: savedList.length,
+          ),
+        ),
+        SliverToBoxAdapter(
+          child: SizedBox(height: 2.h),
         ),
       ],
+    );
+  }
+}
+
+class TabRowRedesigned extends StatefulWidget {
+  const TabRowRedesigned({Key? key}) : super(key: key);
+
+  @override
+  State<TabRowRedesigned> createState() => _TabRowRedesignedState();
+}
+
+class _TabRowRedesignedState extends State<TabRowRedesigned> {
+  int selectedIndex = 0;
+  final List<String> categories = ['All', 'Breakfast', 'Lunch', 'Dinner', 'Dessert'];
+
+  @override
+  Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    return SizedBox(
+      height: 5.h,
+      child: ListView.builder(
+        scrollDirection: Axis.horizontal,
+        itemCount: categories.length,
+        itemBuilder: (context, index) {
+          final isSelected = selectedIndex == index;
+          return GestureDetector(
+            onTap: () {
+              setState(() {
+                selectedIndex = index;
+              });
+            },
+            child: Container(
+              margin: EdgeInsets.only(right: 3.w),
+              padding: EdgeInsets.symmetric(horizontal: 4.w),
+              decoration: BoxDecoration(
+                color: isSelected 
+                    ? Theme.of(context).primaryColor 
+                    : isDark ? Colors.grey[900] : Colors.grey[200],
+                borderRadius: BorderRadius.circular(25),
+              ),
+              child: Center(
+                child: Text(
+                  categories[index],
+                  style: TextStyle(
+                    color: isSelected 
+                        ? Colors.white 
+                        : isDark ? Colors.white70 : Colors.black54,
+                    fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                    fontSize: 12.sp,
+                  ),
+                ),
+              ),
+            ),
+          );
+        },
+      ),
     );
   }
 }
@@ -161,58 +304,77 @@ class EmptyRecipe extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context); // Get the current theme
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          SizedBox(height: 10.h),
-          Image.asset('assets/recipebook.gif'),
-          Text(
-            AppLocalizations.of(context)!.noSavedRecipes,
-            style: theme.textTheme.headlineMedium!.copyWith(fontSize: 14.sp),
-          ),
-          const SizedBox(height: 5.0),
-          Text(
-            AppLocalizations.of(context)!.wantToTakeALook,
-            style: theme.textTheme.headlineSmall,
-          ),
-          SizedBox(height: 2.5.h),
-          InkWell(
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (_) => const CustomNavBar(isGuest: false,),
-                ),
-              );
-            },
-            child: Container(
-              width: double.infinity,
-              height: 45.0,
-              padding: const EdgeInsets.all(10.0),
-              decoration: BoxDecoration(
-                color: theme.primaryColor, // Apply theme primary color
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black38.withOpacity(0.2),
-                    spreadRadius: 2,
-                    blurRadius: 4,
-                    offset: const Offset(0, 2),
-                  ),
-                ],
+      child: Padding(
+        padding: EdgeInsets.symmetric(horizontal: 6.w),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            SizedBox(height: 4.h),
+            Image.asset(
+              'assets/recipebook.gif',
+              height: 30.h,
+            ),
+            SizedBox(height: 3.h),
+            Text(
+              AppLocalizations.of(context)!.noSavedRecipes,
+              style: TextStyle(
+                fontSize: 18.sp,
+                fontWeight: FontWeight.bold,
+                color: isDark ? Colors.white : Colors.black87,
               ),
-              child: Center(
-                child: Text(
-                  AppLocalizations.of(context)!.explore,
-                  style: theme.textTheme.headlineMedium!
-                      .copyWith(color: Colors.white, fontSize: 14.sp),
+              textAlign: TextAlign.center,
+            ),
+            SizedBox(height: 1.h),
+            Text(
+              AppLocalizations.of(context)!.wantToTakeALook,
+              style: TextStyle(
+                fontSize: 14.sp,
+                color: isDark ? Colors.white70 : Colors.black54,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            SizedBox(height: 4.h),
+            GestureDetector(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => const CustomNavBar(isGuest: false),
+                  ),
+                );
+              },
+              child: Container(
+                width: double.infinity,
+                height: 6.h,
+                decoration: BoxDecoration(
+                  color: Theme.of(context).primaryColor,
+                  borderRadius: BorderRadius.circular(16),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Theme.of(context).primaryColor.withOpacity(0.4),
+                      spreadRadius: 1,
+                      blurRadius: 8,
+                      offset: const Offset(0, 3),
+                    ),
+                  ],
+                ),
+                child: Center(
+                  child: Text(
+                    AppLocalizations.of(context)!.explore,
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 14.sp,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
                 ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
