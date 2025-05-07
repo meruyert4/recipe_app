@@ -16,7 +16,9 @@ class RecipesListScreen extends StatelessWidget {
     final isDark = theme.brightness == Brightness.dark;
 
     return Scaffold(
+      backgroundColor: isDark ? Colors.black : theme.colorScheme.background,
       appBar: AppBar(
+        backgroundColor: isDark ? Colors.black : theme.colorScheme.background,
         title: Text(
           'Discover Recipes',
           style: theme.textTheme.titleLarge?.copyWith(
@@ -49,7 +51,7 @@ class RecipesListScreen extends StatelessWidget {
                     color: isDark ? Colors.white70 : Colors.black54, 
                   ),
                   filled: true,
-                  fillColor: isDark ? Colors.grey[900] : Colors.grey[100],
+                  fillColor: isDark ? Colors.grey[850] : Colors.grey[100],
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
                     borderSide: BorderSide.none,
@@ -88,8 +90,8 @@ class RecipesListScreen extends StatelessWidget {
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),
-                      // Always use white card color regardless of theme
-                      color: Colors.white, 
+                      // Use theme-appropriate card color
+                      color: isDark ? Colors.grey[900] : Colors.white,
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -115,7 +117,7 @@ class RecipesListScreen extends StatelessWidget {
                                   style: TextStyle(
                                     fontSize: 14.sp,
                                     fontWeight: FontWeight.bold,
-                                    color: Colors.black, // Always black text
+                                    color: isDark ? Colors.white : Colors.black,
                                   ),
                                   maxLines: 2,
                                   overflow: TextOverflow.ellipsis,
@@ -133,7 +135,7 @@ class RecipesListScreen extends StatelessWidget {
                                       '${recipe.cookTime} min',
                                       style: TextStyle(
                                         fontSize: 10.sp,
-                                        color: Colors.black54, // Always dark gray text
+                                        color: isDark ? Colors.white70 : Colors.black54,
                                       ),
                                     ),
                                     Spacer(),
