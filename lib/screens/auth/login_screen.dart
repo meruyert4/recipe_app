@@ -3,8 +3,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:sizer/sizer.dart';
 // import 'package:google_sign_in/google_sign_in.dart';
-
 import 'package:recipe_app/screens/home_screen.dart';
+import 'package:recipe_app/custom_navbar.dart';
 import 'package:recipe_app/screens/auth/register_screen.dart';
 import 'package:recipe_app/screens/auth/auth.dart';
 
@@ -48,29 +48,88 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Future<void> continueAsGuest() async {
-    setState(() {
-      isLoading = true;
-      error = null;
-    });
+  setState(() {
+    isLoading = true;
+    error = null;
+  });
 
-    final authService = AuthService();
-    final user = await authService.signInAsGuest();
-
+  try {
+    final user = await AuthService().signInAsGuest();
     if (user != null) {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => const HomeScreen()),
+      if (mounted) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const CustomNavBar(isGuest: true),
+          ),
+        );
+      }
+    }
+  } on FirebaseAuthException catch (e) {
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(_getGuestErrorText(e)),
+          backgroundColor: Colors.red,
+        ),
       );
-    } else {
+    }
+  } catch (e) {
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: const Text('Failed to sign in as guest'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  } finally {
+    if (mounted) {
       setState(() {
-        error = 'Failed to sign in as guest.';
+        isLoading = false;
       });
     }
-
-    setState(() {
-      isLoading = false;
-    });
   }
+}
+
+String _getGuestErrorText(FirebaseAuthException e) {
+  switch (e.code) {
+    case 'network-request-failed':
+      return 'No internet connection. Please check your network.';
+    case 'too-many-requests':
+      return 'Too many attempts. Please try again later.';
+    case 'operation-not-allowed':
+      return 'Guest sign-in is not enabled.';
+    default:
+      return 'Guest sign-in failed: ${e.message}';
+  }
+}
+
+    String _getErrorMessage(dynamic error) {
+    if (error is FirebaseAuthException) {
+      switch (error.code) {
+        case 'network-request-failed':
+          return 'Network error. Please check your internet connection.';
+        case 'too-many-requests':
+          return 'Too many requests. Please try again later.';
+        default:
+          return 'Failed to sign in: ${error.message}';
+      }
+    }
+    return 'An unexpected error occurred. Please try again.';
+  }
+
+  void _showError(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: Colors.red,
+        duration: const Duration(seconds: 3),
+      ),
+    );
+  }
+
+  
 
   // Future<void> loginWithGoogle() async {
   //   setState(() {

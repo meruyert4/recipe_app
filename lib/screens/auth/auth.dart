@@ -6,61 +6,42 @@ class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseDatabase _database = FirebaseDatabase.instance;
 
-  // Email & Password Signup
-  Future<User?> signUpWithEmailPassword(String email, String password) async {
-    try {
-      UserCredential userCredential = await _auth.createUserWithEmailAndPassword(
-        email: email,
-        password: password,
-      );
-      User? user = userCredential.user;
-
-      if (user != null) {
-        await _database.ref().child('users').child(user.uid).set({
-          'email': email,
-          'profileImage': '',
-        });
-      }
-
-      return user;
-    } catch (e) {
-      print('Signup Error: $e');
-      return null;
-    }
-  }
-
-  // Email & Password Signin
   Future<User?> signInWithEmailPassword(String email, String password) async {
     try {
       UserCredential userCredential = await _auth.signInWithEmailAndPassword(
         email: email,
         password: password,
       );
+      await _database.ref().child('users/${userCredential.user?.uid}').once();
       return userCredential.user;
+    } on FirebaseAuthException catch (e) {
+      print('Signin Error: ${e.code} - ${e.message}');
+      rethrow;
     } catch (e) {
-      print('Signin Error: $e');
-      return null;
+      print('Unexpected Signin Error: $e');
+      rethrow;
     }
   }
 
-  // Anonymous Guest Sign-in
   Future<User?> signInAsGuest() async {
     try {
       UserCredential userCredential = await _auth.signInAnonymously();
       User? user = userCredential.user;
 
-      // Optional: Store guest user data
       if (user != null) {
-        await _database.ref().child('users').child(user.uid).set({
+        await _database.ref().child('users/${user.uid}').set({
           'isGuest': true,
           'profileImage': '',
+          'createdAt': ServerValue.timestamp,
         });
       }
-
       return user;
+    } on FirebaseAuthException catch (e) {
+      print('Guest Signin Error: ${e.code} - ${e.message}');
+      rethrow;
     } catch (e) {
-      print('Guest Signin Error: $e');
-      return null;
+      print('Unexpected Guest Signin Error: $e');
+      rethrow;
     }
   }
 
@@ -76,24 +57,39 @@ class AuthService {
       );
 
       final userCredential = await _auth.signInWithCredential(credential);
-      return userCredential.user;
+      User? user = userCredential.user;
+      
+      if (user != null) {
+        await _database.ref().child('users/${user.uid}').set({
+          'email': user.email,
+          'profileImage': user.photoURL ?? '',
+          'isGuest': false,
+          'name': user.displayName ?? '',
+        });
+      }
+      return user;
+    } on FirebaseAuthException catch (e) {
+      print('Google Signin Error: ${e.code} - ${e.message}');
+      rethrow;
     } catch (e) {
-      print('Google sign-in failed: $e');
-      return null;
+      print('Unexpected Google Signin Error: $e');
+      rethrow;
     }
   }
 
-  // Sign out
   Future<void> signOut() async {
-    await _auth.signOut();
+    try {
+      await _auth.signOut();
+    } catch (e) {
+      print('Signout Error: $e');
+      rethrow;
+    }
   }
 
-  // Get current user
   User? getCurrentUser() {
     return _auth.currentUser;
   }
 
-  // Check if current user is guest
   bool isGuest() {
     final user = _auth.currentUser;
     return user != null && user.isAnonymous;

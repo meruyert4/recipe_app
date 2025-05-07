@@ -5,7 +5,7 @@ import 'package:unicons/unicons.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class CustomNavBar extends StatefulWidget {
-  final bool isGuest; // Add the isGuest parameter
+  final bool isGuest;
 
   const CustomNavBar({Key? key, required this.isGuest}) : super(key: key);
 
@@ -28,15 +28,14 @@ class _CustomNavBarState extends State<CustomNavBar>
     final theme = Theme.of(context);
     final localizations = AppLocalizations.of(context)!;
 
-    // Pages for guest users (no fridge or saved tabs)
-    final guestPages = [
+    // Common pages for all users (removed const)
+    final commonPages = [
       const HomeScreen(),
       const RecipesListScreen(),
       const ForumScreen(),
-      const ProfileScreen(),
     ];
 
-    final guestItems = [
+    final commonItems = [
       BottomNavigationBarItem(
         icon: const Icon(UniconsLine.home),
         label: localizations.home,
@@ -49,32 +48,24 @@ class _CustomNavBarState extends State<CustomNavBar>
         icon: const Icon(UniconsLine.comments),
         label: localizations.forum,
       ),
-      BottomNavigationBarItem(
-        icon: const Icon(UniconsLine.user),
-        label: localizations.profile,
-      ),
     ];
 
-    // Pages for authenticated users (add saved and fridge tabs if needed)
-    final authenticatedPages = [
-      const HomeScreen(),
-      const RecipesListScreen(),
-      const ForumScreen(),
+    final authPages = [
+      ...commonPages,
+      const OpenFridgeScreen(),
+      const SavedScreen(),
       const ProfileScreen(),
     ];
 
-    final authenticatedItems = [
+    final authItems = [
+      ...commonItems,
       BottomNavigationBarItem(
-        icon: const Icon(UniconsLine.home),
-        label: localizations.home,
+        icon: const Icon(UniconsLine.utensils),
+        label: localizations.fridge,
       ),
       BottomNavigationBarItem(
-        icon: const Icon(UniconsLine.restaurant),
-        label: localizations.recipes,
-      ),
-      BottomNavigationBarItem(
-        icon: const Icon(UniconsLine.comments),
-        label: localizations.forum,
+        icon: const Icon(UniconsLine.heart),
+        label: localizations.saved,
       ),
       BottomNavigationBarItem(
         icon: const Icon(UniconsLine.user),
@@ -82,9 +73,20 @@ class _CustomNavBarState extends State<CustomNavBar>
       ),
     ];
 
-    // Use the pages and items based on isGuest
-    final pages = widget.isGuest ? guestPages : authenticatedPages;
-    final items = widget.isGuest ? guestItems : authenticatedItems;
+    // Pages and items based on user type
+    final pages = widget.isGuest 
+        ? [...commonPages, const ProfileScreen()] 
+        : authPages;
+        
+    final items = widget.isGuest
+        ? [
+            ...commonItems,
+            BottomNavigationBarItem(
+              icon: const Icon(UniconsLine.user),
+              label: localizations.profile,
+            ),
+          ]
+        : authItems;
 
     // Safe index handling
     final safeIndex = selectedIndex >= pages.length ? 0 : selectedIndex;

@@ -5,8 +5,8 @@ import 'package:recipe_app/models/user_model.dart';
 import 'package:recipe_app/screens/auth/login_screen.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:sizer/sizer.dart';
-import 'package:google_sign_in/google_sign_in.dart';
 import 'package:recipe_app/screens/auth/auth.dart';
+import 'package:recipe_app/custom_navbar.dart';
 
 
 class RegisterScreen extends StatefulWidget {
@@ -23,21 +23,20 @@ class _RegisterScreenState extends State<RegisterScreen> {
   bool isLoading = false;
   String? error;
 
-  Future<void> register() async {
+Future<void> register() async {
     setState(() {
       isLoading = true;
       error = null;
     });
 
     try {
-      UserCredential userCredential =
-          await FirebaseAuth.instance.createUserWithEmailAndPassword(
+      UserCredential userCredential = await FirebaseAuth.instance
+          .createUserWithEmailAndPassword(
         email: emailController.text.trim(),
         password: passwordController.text,
       );
 
       final user = userCredential.user;
-
       if (user != null) {
         final name = nameController.text.trim();
         await user.updateDisplayName(name);
@@ -48,19 +47,19 @@ class _RegisterScreenState extends State<RegisterScreen> {
           name: name,
         );
 
-        final userRef =
-            FirebaseDatabase.instance.ref().child('users/${user.uid}');
-        await userRef.set(newUser.toJson());
-      }
+        await FirebaseDatabase.instance
+            .ref()
+            .child('users/${user.uid}')
+            .set(newUser.toJson());
 
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (_) => const LoginScreen()),
-      );
-    } on FirebaseAuthException catch (e) {
-      setState(() {
-        error = e.message;
-      });
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (_) => const CustomNavBar(isGuest: false)),
+        );
+      }
+    } catch (e) {
+      final errorMessage = _getErrorMessage(e);
+      _showError(errorMessage);
     }
 
     setState(() {
@@ -68,6 +67,34 @@ class _RegisterScreenState extends State<RegisterScreen> {
     });
   }
 
+  String _getErrorMessage(dynamic error) {
+    if (error is FirebaseAuthException) {
+      switch (error.code) {
+        case 'weak-password':
+          return 'The password provided is too weak.';
+        case 'email-already-in-use':
+          return 'The account already exists for that email.';
+        case 'invalid-email':
+          return 'The email address is not valid.';
+        case 'network-request-failed':
+          return 'Network error. Please check your internet connection.';
+        default:
+          return 'Registration failed: ${error.message}';
+      }
+    }
+    return 'An unexpected error occurred. Please try again.';
+  }
+
+  void _showError(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: Colors.red,
+        duration: const Duration(seconds: 3),
+      ),
+    );
+  }
+  
   Future<void> registerWithGoogle() async {
     setState(() {
       isLoading = true;
