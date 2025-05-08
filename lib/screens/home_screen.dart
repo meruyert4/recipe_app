@@ -197,8 +197,8 @@ class HomePopularGrid extends StatelessWidget {
                   ? recipe.imageName
                   : 'assets/recipe_dataset/images/${recipe.imageName}.jpg',
               text: recipe.title,
-              prepTime: 30,
-              cookTime: 45,
+              prepTime: recipe.cookTime,
+              cookTime: 0,
               recipeReview: 4.5,
             ),
           );
@@ -336,7 +336,7 @@ class QuickRecipesList extends StatelessWidget {
 class HomeStack extends StatelessWidget {
   final String image;
   final String text;
-  final double prepTime;
+  final int prepTime;
   final double cookTime;
   final double recipeReview;
 
