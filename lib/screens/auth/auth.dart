@@ -44,39 +44,6 @@ class AuthService {
       rethrow;
     }
   }
-
-  Future<User?> signInWithGoogle() async {
-    try {
-      final googleUser = await GoogleSignIn().signIn();
-      if (googleUser == null) return null;
-
-      final googleAuth = await googleUser.authentication;
-      final credential = GoogleAuthProvider.credential(
-        accessToken: googleAuth.accessToken,
-        idToken: googleAuth.idToken,
-      );
-
-      final userCredential = await _auth.signInWithCredential(credential);
-      User? user = userCredential.user;
-      
-      if (user != null) {
-        await _database.ref().child('users/${user.uid}').set({
-          'email': user.email,
-          'profileImage': user.photoURL ?? '',
-          'isGuest': false,
-          'name': user.displayName ?? '',
-        });
-      }
-      return user;
-    } on FirebaseAuthException catch (e) {
-      print('Google Signin Error: ${e.code} - ${e.message}');
-      rethrow;
-    } catch (e) {
-      print('Unexpected Google Signin Error: $e');
-      rethrow;
-    }
-  }
-
   Future<void> signOut() async {
     try {
       await _auth.signOut();
