@@ -31,7 +31,7 @@ class _CustomNavBarState extends State<CustomNavBar>
     // Common pages for all users (removed const)
     final commonPages = [
       const HomeScreen(),
-      const RecipesListScreen(),
+      RecipesListScreen(),
       const ForumScreen(),
     ];
 

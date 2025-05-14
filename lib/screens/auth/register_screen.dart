@@ -5,7 +5,6 @@ import 'package:recipe_app/models/user_model.dart';
 import 'package:recipe_app/screens/auth/login_screen.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:sizer/sizer.dart';
-import 'package:recipe_app/screens/auth/auth.dart';
 import 'package:recipe_app/custom_navbar.dart';
 
 class RegisterScreen extends StatefulWidget {
@@ -22,7 +21,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final nameController = TextEditingController();
   bool isLoading = false;
   bool _isRegistering = false;
-  bool _isRegisteringWithGoogle = false;
   String? error;
 
   @override
@@ -119,49 +117,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
         ],
       ),
     );
-  }
-  
-  Future<void> registerWithGoogle() async {
-    if (_isRegisteringWithGoogle) return;
-
-    setState(() {
-      isLoading = true;
-      _isRegisteringWithGoogle = true;
-      error = null;
-    });
-
-    try {
-      final authService = AuthService();
-      final user = await authService.signInWithGoogle();
-
-      if (user != null && mounted) {
-        final userRef = FirebaseDatabase.instance.ref().child('users/${user.uid}');
-        final snapshot = await userRef.get();
-
-        if (!snapshot.exists) {
-          final newUser = UserModel(
-            uid: user.uid,
-            email: user.email ?? '',
-            name: user.displayName ?? '',
-          );
-          await userRef.set(newUser.toJson());
-        }
-
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (_) => const CustomNavBar(isGuest: false)),
-        );
-      }
-    } catch (e) {
-      _showErrorDialog('Google sign-up failed: ${e.toString()}');
-    } finally {
-      if (mounted) {
-        setState(() {
-          isLoading = false;
-          _isRegisteringWithGoogle = false;
-        });
-      }
-    }
   }
 
   @override
