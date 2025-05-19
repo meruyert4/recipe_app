@@ -2,6 +2,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:recipe_app/provider/provider.dart';
+import 'package:recipe_app/provider/connectivity_provider.dart';
+import 'package:recipe_app/widgets/offline_banner.dart';
 import 'package:recipe_app/screens/recipe_detail_screen.dart';
 import 'package:recipe_app/widgets/widgets.dart';
 import 'package:sizer/sizer.dart';
@@ -14,118 +16,127 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final isOnline = context.watch<ConnectivityProvider>().isOnline;
 
     return Scaffold(
       backgroundColor: isDark ? Colors.black : Theme.of(context).colorScheme.background, 
       body: SafeArea(
-        child: FutureBuilder(
-          future: Provider.of<RecipeProvider>(context, listen: false).loadRecipes(),
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return Center(
-                child: CircularProgressIndicator(
-                  color: Theme.of(context).primaryColor,
-                ),
-              );
-            } else if (snapshot.hasError) {
-              return Center(
-                child: Text(
-                  AppLocalizations.of(context)!.errorLoadingData,
-                  style: Theme.of(context).textTheme.bodyMedium,
-                ),
-              );
-            } else {
-              return CustomScrollView(
-                physics: const BouncingScrollPhysics(),
-                slivers: [
-                  SliverToBoxAdapter(
-                    child: Padding(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: 4.w,
-                        vertical: 2.h,
+        child: Column(
+          children: [
+            if (!isOnline)
+              const OfflineBanner(),
+            Expanded(
+              child: FutureBuilder(
+                future: Provider.of<RecipeProvider>(context, listen: false).loadRecipes(),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return Center(
+                      child: CircularProgressIndicator(
+                        color: Theme.of(context).primaryColor,
                       ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const HomeLogoText(),
-                          SizedBox(height: 2.h),
-                          const HomeHeaderRow(),
-                          SizedBox(height: 3.h),
-                          const SearchField(),
-                          SizedBox(height: 4.h),
-                          // Первая секция - Quick Recipes
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(
-                                "Quick & Easy Recipes",
-                                style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                                      fontWeight: FontWeight.w700,
+                    );
+                  } else if (snapshot.hasError) {
+                    return Center(
+                      child: Text(
+                        AppLocalizations.of(context)!.errorLoadingData,
+                        style: Theme.of(context).textTheme.bodyMedium,
+                      ),
+                    );
+                  } else {
+                    return CustomScrollView(
+                      physics: const BouncingScrollPhysics(),
+                      slivers: [
+                        SliverToBoxAdapter(
+                          child: Padding(
+                            padding: EdgeInsets.symmetric(
+                              horizontal: 4.w,
+                              vertical: 2.h,
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const HomeLogoText(),
+                                SizedBox(height: 2.h),
+                                const HomeHeaderRow(),
+                                SizedBox(height: 3.h),
+                                const SearchField(),
+                                SizedBox(height: 4.h),
+                                // Первая секция - Quick Recipes
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text(
+                                      "Quick & Easy Recipes",
+                                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                                            fontWeight: FontWeight.w700,
+                                          ),
                                     ),
-                              ),
-                              InkWell(
-                                onTap: () {
-                                  // TODO: Navigate to all quick recipes
-                                },
-                                borderRadius: BorderRadius.circular(4),
-                                child: Padding(
-                                  padding: EdgeInsets.all(1.w),
-                                  child: Text(
-                                    "See All",
-                                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                          color: Theme.of(context).primaryColor,
+                                    InkWell(
+                                      onTap: () {
+                                        // TODO: Navigate to all quick recipes
+                                      },
+                                      borderRadius: BorderRadius.circular(4),
+                                      child: Padding(
+                                        padding: EdgeInsets.all(1.w),
+                                        child: Text(
+                                          "See All",
+                                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                                color: Theme.of(context).primaryColor,
+                                              ),
                                         ),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                          SizedBox(height: 2.h),
-                        ],
-                      ),
-                    ),
-                  ),
-                  SliverToBoxAdapter(child: QuickRecipesList()),
-                  SliverToBoxAdapter(
-                    child: Padding(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: 4.w,
-                        vertical: 3.h,
-                      ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            AppLocalizations.of(context)?.popularRecipes ?? "Popular Recipes",
-                            style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                                  fontWeight: FontWeight.w700,
-                                ),
-                          ),
-                          InkWell(
-                            onTap: () {
-                              // TODO: Navigate to all popular recipes
-                            },
-                            borderRadius: BorderRadius.circular(4),
-                            child: Padding(
-                              padding: EdgeInsets.all(1.w),
-                              child: Text(
-                                "See All",
-                                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                      color: Theme.of(context).primaryColor,
+                                      ),
                                     ),
-                              ),
+                                  ],
+                                ),
+                                SizedBox(height: 2.h),
+                              ],
                             ),
                           ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  SliverToBoxAdapter(child: HomePopularGrid()),
-                  SliverToBoxAdapter(child: SizedBox(height: 2.h)),
-                ],
-              );
-            }
-          },
+                        ),
+                        SliverToBoxAdapter(child: QuickRecipesList()),
+                        SliverToBoxAdapter(
+                          child: Padding(
+                            padding: EdgeInsets.symmetric(
+                              horizontal: 4.w,
+                              vertical: 3.h,
+                            ),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  AppLocalizations.of(context)?.popularRecipes ?? "Popular Recipes",
+                                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                                        fontWeight: FontWeight.w700,
+                                      ),
+                                ),
+                                InkWell(
+                                  onTap: () {
+                                    // TODO: Navigate to all popular recipes
+                                  },
+                                  borderRadius: BorderRadius.circular(4),
+                                  child: Padding(
+                                    padding: EdgeInsets.all(1.w),
+                                    child: Text(
+                                      "See All",
+                                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                            color: Theme.of(context).primaryColor,
+                                          ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                        SliverToBoxAdapter(child: HomePopularGrid()),
+                        SliverToBoxAdapter(child: SizedBox(height: 2.h)),
+                      ],
+                    );
+                  }
+                },
+              ),
+            ),
+          ],
         ),
       ),
     );

@@ -7,6 +7,7 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:recipe_app/provider/provider.dart';
 import 'package:recipe_app/provider/locale_provider.dart';
+import 'package:recipe_app/provider/connectivity_provider.dart';
 import 'package:recipe_app/firebase_options.dart';
 import 'package:recipe_app/screens/auth/login_screen.dart';
 import 'package:recipe_app/custom_navbar.dart';
@@ -26,6 +27,7 @@ void main() async {
         ChangeNotifierProvider(create: (_) => SavedProvider()),
         ChangeNotifierProvider(create: (_) => ThemeProvider()),
         ChangeNotifierProvider(create: (_) => LocaleProvider()),
+        ChangeNotifierProvider(create: (_) => ConnectivityProvider()),
       ],
       child: const MyApp(),
     ),
