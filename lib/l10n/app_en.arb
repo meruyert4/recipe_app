@@ -32,5 +32,15 @@
     "recipeDeleted": "{recipeTitle} deleted",
     "noSavedRecipes": "You haven't saved any recipes yet",
     "wantToTakeALook": "Want to take a look?",
-    "explore": "Explore"
+    "explore": "Explore",
+    "generateRecipes": "Generate Recipes",
+    "suggestedRecipes": "Suggested Recipes",
+    "generateNewRecipes": "Generate New Recipes",
+    "@generateRecipes": {
+    "description": "Button text for generating recipes from ingredients"
+     },
+    "@suggestedRecipes": {
+    "description": "Heading for the recipes section"     },
+    "@generateNewRecipes": {
+    "description": "Button text for generating new set of recipes"      }
 }
