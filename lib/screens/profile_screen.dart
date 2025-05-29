@@ -81,7 +81,7 @@ class _ProfileHeaderState extends State<ProfileHeader> {
     if (userId != null) {
       try {
         final avatarRef = FirebaseDatabase.instance.ref('users/$userId/profileImage');
-        final usernameRef = FirebaseDatabase.instance.ref('users/$userId/name');
+        final usernameRef = FirebaseDatabase.instance.ref('users/$userId/username');
 
         final avatarSnapshot = await avatarRef.get();
         final usernameSnapshot = await usernameRef.get();
