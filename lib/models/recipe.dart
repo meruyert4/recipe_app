@@ -31,13 +31,15 @@ class Recipe {
 }
 
 static List<String> parseStringList(String value) {
-  return value
-      .replaceAll('[', '')
-      .replaceAll(']', '')
-      .split(',')
-      .map((e) => e.trim().replaceAll("'", ''))
-      .toList();
-}
+    if (value == "[]") return []; // Keep this if you want "[]" to be an empty list
+    return value
+        .replaceAll('[', '')
+        .replaceAll(']', '')
+        .split(',')
+        .map((e) => e.replaceAll("'", '').trim()) // Corrected order: remove quotes, then trim
+        .toList();
+  }
+
 
   String get imageUrl => 'assets/recipe_dataset/images/$imageName.jpg';
 }
