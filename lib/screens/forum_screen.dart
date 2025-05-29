@@ -63,17 +63,21 @@ class _ForumScreenState extends State<ForumScreen> {
   User? _currentUser;
   String? _avatarUrl;
 
+  static const String postsStorageKey = 'forum_posts';
+
   @override
   void initState() {
     super.initState();
     _loadUserData();
-    _loadPostsFromFirebase(); 
+    _loadPostsFromFirebase();
   }
 
   Future<void> _loadUserData() async {
     _currentUser = _auth.currentUser;
     if (_currentUser != null) {
-      setState(() {});
+      setState(() {
+        _avatarUrl = _currentUser!.photoURL;
+      });
     }
   }
 
@@ -102,12 +106,27 @@ class _ForumScreenState extends State<ForumScreen> {
 
   Future<List<ForumPost>> _loadPostsFromSharedPreferences() async {
     final prefs = await SharedPreferences.getInstance();
-    final List<String>? savedPostsJson = prefs.getStringList('forum_posts');
+    final List<String>? savedPostsJson = prefs.getStringList(postsStorageKey);
     final List<ForumPost> localPosts = [];
 
-    if (savedPostsJson != null) {
-      localPosts.addAll(savedPostsJson.map((post) => ForumPost.fromJson(jsonDecode(post))));
+    print('--- Local Storage Log Start (from _loadPostsFromSharedPreferences) ---');
+    print('Attempting to load posts from SharedPreferences with key: $postsStorageKey');
+
+    if (savedPostsJson != null && savedPostsJson.isNotEmpty) {
+      print('Found ${savedPostsJson.length} saved post(s) in local storage:');
+      for (int i = 0; i < savedPostsJson.length; i++) {
+        print('Post ${i + 1} (raw JSON): ${savedPostsJson[i]}');
+        try {
+          localPosts.add(ForumPost.fromJson(jsonDecode(savedPostsJson[i])));
+        } catch (e) {
+          print("Error decoding post from SharedPreferences: ${savedPostsJson[i]}, Error: $e");
+        }
+      }
+    } else if (savedPostsJson != null && savedPostsJson.isEmpty) {
+        print('Found key "$postsStorageKey" in SharedPreferences, but it contains an empty list of posts.');
     } else {
+       print('No posts found in local storage with key "$postsStorageKey".');
+       print('Adding default local posts to the list for this session (as per original logic).');
        localPosts.addAll([
           ForumPost(
             userId: 'demo1',
@@ -128,10 +147,12 @@ class _ForumScreenState extends State<ForumScreen> {
             timestamp: DateTime.now().subtract(Duration(hours: 5)),
           ),
        ]);
+       print('Added ${localPosts.length} default demo posts.');
     }
+    localPosts.sort((a, b) => b.timestamp.compareTo(a.timestamp));
+    print('--- Local Storage Log End (from _loadPostsFromSharedPreferences) ---');
     return localPosts;
   }
-
 
   Future<void> _addPost(String title, String content, List<String> tags) async {
     if (_currentUser == null) {
@@ -143,7 +164,7 @@ class _ForumScreenState extends State<ForumScreen> {
 
     final newPost = ForumPost(
       userId: _currentUser!.uid,
-      userAvatarUrl: _avatarUrl,
+      userAvatarUrl: _avatarUrl ?? _currentUser!.photoURL,
       userName: _currentUser!.displayName ?? 'Anonymous',
       title: title,
       content: content,
@@ -151,16 +172,50 @@ class _ForumScreenState extends State<ForumScreen> {
       timestamp: DateTime.now(),
     );
 
+    setState(() {
+      _posts.insert(0, newPost);
+    });
+
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final List<String>? existingPostsJson = prefs.getStringList(postsStorageKey);
+      final List<ForumPost> allLocalPosts = [];
+
+      if (existingPostsJson != null) {
+        for (String postJson in existingPostsJson) {
+          try {
+            allLocalPosts.add(ForumPost.fromJson(jsonDecode(postJson)));
+          } catch (e) {
+            print("Error decoding existing post from SharedPreferences during add: $e");
+          }
+        }
+      }
+      
+      allLocalPosts.insert(0, newPost);
+      final List<String> updatedPostsJson = allLocalPosts.map((post) => jsonEncode(post.toJson())).toList();
+      await prefs.setStringList(postsStorageKey, updatedPostsJson);
+      print("Post added by '${newPost.userName}' titled '${newPost.title}' and saved to SharedPreferences.");
+    } catch (error) {
+      print("Error saving post to SharedPreferences: $error");
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to save post locally: $error')),
+      );
+    }
+
     try {
       DatabaseReference newPostRef = _postsRef.push();
       await newPostRef.set(newPost.toJson());
-      newPost.firebaseKey = newPostRef.key;
-
-      setState(() => _posts.insert(0, newPost));
+      final index = _posts.indexWhere((p) => p.timestamp == newPost.timestamp && p.title == newPost.title);
+      if (index != -1) {
+        setState(() {
+           _posts[index].firebaseKey = newPostRef.key;
+        });
+      }
+      print("Post also sent to Firebase successfully.");
     } catch (error) {
-      print("Error adding post to Firebase: $error");
+      print("Error adding post to Firebase (this is expected if offline): $error");
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to create post: $error')),
+        SnackBar(content: Text('Post saved locally. Will sync with Firebase when online. Error: $error')),
       );
     }
   }
@@ -174,15 +229,26 @@ class _ForumScreenState extends State<ForumScreen> {
 
     try {
       final List<ForumPost> localPosts = await _loadPostsFromSharedPreferences();
-      if (localPosts.isEmpty) {
-         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('No local posts to synchronize.')),
-        );
-        setState(() => _isLoading = false);
-        return;
+      
+      if (localPosts.isEmpty || localPosts.every((post) => post.userId.startsWith('demo'))) {
+         bool onlyDemo = localPosts.every((post) => post.userId.startsWith('demo'));
+         if (localPosts.isEmpty || onlyDemo) {
+            ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(localPosts.isEmpty ? 'No local posts to synchronize.' : 'No user-created local posts to synchronize.')),
+            );
+            setState(() => _isLoading = false);
+            return;
+         }
       }
+      
+      print("Found ${localPosts.length} post(s) in SharedPreferences to potentially sync.");
 
       for (final post in localPosts) {
+        if (post.userId.startsWith('demo')) {
+            print("Skipping demo post: '${post.title}'");
+            continue;
+        }
+
         final query = _postsRef.orderByChild('title').equalTo(post.title);
         final snapshot = await query.once();
 
@@ -190,16 +256,17 @@ class _ForumScreenState extends State<ForumScreen> {
         if (snapshot.snapshot.value != null) {
             final Map<dynamic, dynamic> results = snapshot.snapshot.value as Map<dynamic, dynamic>;
             results.forEach((key, value) {
-                if (value['userId'] == post.userId && value['content'] == post.content) {
+                if (value['userId'] == post.userId && value['content'] == post.content && value['timestamp'] == post.timestamp.toIso8601String()) {
                     exists = true;
+                    print("Post titled '${post.title}' by ${post.userName} (Timestamp: ${post.timestamp}) already exists in Firebase. Skipping.");
                 }
             });
         }
 
         if (!exists) {
-            await _postsRef.push().set(post.toJson());
-        } else {
-            print("Post titled '${post.title}' by ${post.userName} already exists. Skipping.");
+            print("Syncing post to Firebase: '${post.title}' by ${post.userName}");
+            DatabaseReference newRef = _postsRef.push();
+            await newRef.set(post.toJson());
         }
       }
 
@@ -218,7 +285,6 @@ class _ForumScreenState extends State<ForumScreen> {
       }
     }
   }
-
 
   @override
   Widget build(BuildContext context) {
